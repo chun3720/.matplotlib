@@ -10,7 +10,7 @@ import pandas as pd
 import os
 from matplotlib import pyplot as plt
 import numpy as np
-from loadexp_0318 import *
+# from loadexp_0318 import *
 from openpyxl import load_workbook
 # import peakdetect
 
@@ -204,9 +204,13 @@ def get_export(exp_obj, path):
         print("exporting...\n")
         progress_bar(0, n)
         for i, gcd in enumerate(exp_obj):
-            df = gcd.cycle2[["time", "V"]].copy()
-            df.columns = [f'{i}', gcd.name]
-            df.to_excel(writer, startcol = 2*i, index = False)
+            cols = ["time", "V"]
+            (
+                gcd.cycle2[cols]
+                .to_excel(writer, startcol = 2*i, index = False, header = [f'{i}', gcd.name])
+                
+                )
+
             progress_bar(i+1, n)
         df1.to_excel(writer, sheet_name = 'Summary')
         
