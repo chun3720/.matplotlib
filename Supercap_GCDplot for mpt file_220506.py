@@ -127,9 +127,6 @@ class EC_measurement(Dataloads):
         
         if not os.path.exists(output_path):
             os.mkdir(output_path)
-#         fig = plt.figure()
-#         ax0 = fig.add_subplot(1, 2, 1)
-#         ax1 = fig.add_subplot(1, 2, 2)
 
         if self.method == "GCD":
             # Is = str(self.appl_current) + ' ' + self.appl_unit
