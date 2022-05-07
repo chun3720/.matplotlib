@@ -52,7 +52,6 @@ def get_export(exp, path, check = 'n', convertor = 'n'):
 
     if check == 'y':
         
-        
         with pd.ExcelWriter(f'{output_path}Cycle_tot.xlsx') as writer:
 
             for i, cy in enumerate(exp):
