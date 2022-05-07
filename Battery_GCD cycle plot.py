@@ -49,7 +49,8 @@ class LIB_tot(Dataloads):
         
 def get_export(exp, path, check = 'n', convertor = 'n'):
     output_path = f'{path}output\\'
-    
+    cols = exp[0].data.columns
+
     if not os.path.exists(output_path):
         os.mkdir(output_path) 
 
@@ -58,13 +59,9 @@ def get_export(exp, path, check = 'n', convertor = 'n'):
         with pd.ExcelWriter(f'{output_path}Cycle_tot.xlsx') as writer:
 
             for i, cy in enumerate(exp):
-                cols = ["cycle number", "Capacity"]
-                df = cy.data[cols]
-                
                 (
-                    cy.data[cols].assign(Capacity = cy.data[cols]["Capacity"]*1000)
+                    cy.data[cols].assign(Capacity = cy.data[cols][cy.y]*1000)
                     .to_excel(writer, startcol = 2*i, index = False, header = ["mAh/g", cy.name])
-                    
                     )
 
                 plt.plot(cy.X, cy.Y*1000,'o', label = cy.name)
@@ -84,9 +81,9 @@ def get_export(exp, path, check = 'n', convertor = 'n'):
                     
                     quest = input(f"type conversion factor for '{cy.file}' (make sure it means denominator): ")
                     basis = float(quest)
-                    cols = ["cycle number", "Capacity"]
+
                     (
-                     cy.data[cols].assign(Capacity = cy.data[cols]["Capacity"]*1000/basis)   
+                     cy.data[cols].assign(Capacity = cy.data[cols][cy.y]*1000/basis)   
                      .to_excel(writer, startcol = 2*i, index = False, header = ["mAh/g(re)", cy.name])                    
                         )
                     plt.plot(cy.X, cy.Y*1000/basis, 'o', label = cy.name)
@@ -110,15 +107,15 @@ def get_export(exp, path, check = 'n', convertor = 'n'):
                   
                 
         if convertor != 'n':
-            # basis = float(convertor)/100
+
             with pd.ExcelWriter(f'{output_path}Cycle_recalculation.xlsx') as writer:
 
                 for i, cy in enumerate(exp):
                     quest = input(f"type conversion factor for '{cy.file}' (make sure it means denominator): ")
                     basis = float(quest)
-                    cols = ["cycle number", "Capacity"]
+
                     (
-                        cy.data[cols].assign(Capacity = cy.data[cols]["Capacity"]/basis)   
+                        cy.data[cols].assign(Capacity = cy.data[cols][cy.y]/basis)   
                         .to_excel(writer, startcol = 2*i, index = False, header = ["Ah/g(re)", cy.name])                    
                         )
             
