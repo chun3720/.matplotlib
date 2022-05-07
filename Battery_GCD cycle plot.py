@@ -55,13 +55,13 @@ def get_export(exp, path, check = 'n', convertor = 'n'):
         with pd.ExcelWriter(f'{output_path}Cycle_tot.xlsx') as writer:
 
             for i, cy in enumerate(exp):
-                
-                df = cy.data[:]
+                cols = ["cycle number", "Capacity (Ah/g)"]
+                df = cy.data[cols]
                 df["Capacity (Ah/g)"] *= 1000
                 # df["Capacity (Ah/g)"] = df["Capacity (Ah/g)"].apply(lambda x: x*1000)
-                df.columns = ["mAh/g", cy.name]
+                # df.columns = ["mAh/g", cy.name]
                 plt.plot(df[df.columns[0]], df[df.columns[1]],'o', label = cy.name)
-                df.to_excel(writer, startcol = 2*i, index = False)
+                df.to_excel(writer, startcol = 2*i, index = False, header = ["mAh/g", cy.name])
             leg = plt.legend(fontsize = 'xx-small')
             for line, text in zip(leg.get_lines(), leg.get_texts()):
                 text.set_color(line.get_color())
