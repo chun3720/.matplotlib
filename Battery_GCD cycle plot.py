@@ -63,7 +63,7 @@ def get_export(exp, path, check = 'n', convertor = 'n'):
                     cy.data[cols].assign(Capacity = cy.data[cols][cy.y]*1000)
                     .to_excel(writer, startcol = 2*i, index = False, header = ["mAh/g", cy.name])
                     )
-
+                
                 plt.plot(cy.X, cy.Y*1000,'o', label = cy.name)
                 
             leg = plt.legend(fontsize = 'xx-small')
