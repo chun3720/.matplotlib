@@ -15,7 +15,7 @@ from openpyxl import load_workbook
 # import peakdetect
 
 
-# plt.style.use('science')
+plt.style.use(['science', 'no-latex'])
 year_path  = "D:\\Researcher\\JYCheon\\DATA\\Electrochemistry\\2022\\Raw"
 
 
@@ -153,7 +153,7 @@ class Capacitance(Dataloads):
             self.cap_result *= 1000
             self.cap_unit = 'mF'
             
-        if self.cap_result < 10 and self.cap_unit == 'mF':
+        if self.cap_result < 1 and self.cap_unit == 'mF':
             self.cap_result *= 1000
             self.cap_unit = 'uF'
             
