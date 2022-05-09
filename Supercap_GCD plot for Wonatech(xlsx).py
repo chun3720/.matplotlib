@@ -139,8 +139,10 @@ class Capacitance(Dataloads):
         else:
         ###
             # for 1V calculation
-            n = self.df_discharge.shape[0]
-            T2, V2 = self.df_discharge.loc[n-1]
+            n = self.cycle2.shape[0]
+            # n = self.discharge.shape[0]
+            T2, V2= self.cycle2[["time", "V"]].loc[n-1]
+            # T2, V2 = self.discharge.loc[n-1]
 
         self.max_point = np.array([T1, T2])
         self.half_point = np.array([V1, V2])
