@@ -13,8 +13,8 @@ from matplotlib import pyplot as plt
 import seaborn as sns
 # plt.style.use(['science', 'grid'])
 plt.style.use(['science', 'no-latex'])
-# year_path = "D:\\Researcher\\JYCheon\\DATA\\Electrochemistry\\Coin cell\\2022\\"
-year_path = "C:\\Users\\jycheon\\Documents\\Dummy"
+year_path = "D:\\Researcher\\JYCheon\\DATA\\Electrochemistry\\Coin cell\\2022\\"
+# year_path = "C:\\Users\\jycheon\\Documents\\Dummy"
 
 
 class LIB_tot(Dataloads):  
