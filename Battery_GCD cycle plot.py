@@ -14,6 +14,8 @@ import seaborn as sns
 # plt.style.use(['science', 'grid'])
 plt.style.use(['science', 'no-latex'])
 year_path = "D:\\Researcher\\JYCheon\\DATA\\Electrochemistry\\Coin cell\\2022\\"
+# year_path = "C:\\Users\\jycheon\\Documents\\Dummy"
+
 
 class LIB_tot(Dataloads):  
     # df_list = []
@@ -21,7 +23,8 @@ class LIB_tot(Dataloads):
         Dataloads.__init__(self, path, file)
         # (self.name, self.ext) = self.file.split('.')
         self.data = pd.read_excel(self.file_path, sheet_name = '데이터_1_1', index_col = 0) 
-        self.data.columns = ["cycle number", "Capacity (Ah/g)"]
+        self.data.columns = ["cycle number", "Capacity"]
+        self.unit = "(Ah/g)"
         # self.X, self.Y = self.data.columns[0]
         self.x, self.y  = self.data.columns
         self.X = self.data[self.x]
@@ -46,7 +49,8 @@ class LIB_tot(Dataloads):
         
 def get_export(exp, path, check = 'n', convertor = 'n'):
     output_path = f'{path}output\\'
-    
+    cols = exp[0].data.columns
+
     if not os.path.exists(output_path):
         os.mkdir(output_path) 
 
@@ -55,13 +59,13 @@ def get_export(exp, path, check = 'n', convertor = 'n'):
         with pd.ExcelWriter(f'{output_path}Cycle_tot.xlsx') as writer:
 
             for i, cy in enumerate(exp):
+                (
+                    cy.data[cols].assign(Capacity = cy.data[cols][cy.y]*1000)
+                    .to_excel(writer, startcol = 2*i, index = False, header = ["mAh/g", cy.name])
+                    )
                 
-                df = cy.data[:]
-                df["Capacity (Ah/g)"] *= 1000
-                # df["Capacity (Ah/g)"] = df["Capacity (Ah/g)"].apply(lambda x: x*1000)
-                df.columns = ["mAh/g", cy.name]
-                plt.plot(df[df.columns[0]], df[df.columns[1]],'o', label = cy.name)
-                df.to_excel(writer, startcol = 2*i, index = False)
+                plt.plot(cy.X, cy.Y*1000,'o', label = cy.name)
+                
             leg = plt.legend(fontsize = 'xx-small')
             for line, text in zip(leg.get_lines(), leg.get_texts()):
                 text.set_color(line.get_color())
@@ -77,50 +81,52 @@ def get_export(exp, path, check = 'n', convertor = 'n'):
                     
                     quest = input(f"type conversion factor for '{cy.file}' (make sure it means denominator): ")
                     basis = float(quest)
-                    df1 = cy.data[:]
-                    # df1["Capacity (Ah/g)"] *= 1000
-                    df1["Capacity (Ah/g)"] /= basis
-                    df1.columns = ["mAh/g(active)", cy.name]
-                    plt.plot(df1[df1.columns[0]], df1[df1.columns[1]], 'o', label = cy.name)
-                    df1.to_excel(writer, startcol = 2*i, index = False)
+
+                    (
+                     cy.data[cols].assign(Capacity = cy.data[cols][cy.y]*1000/basis)   
+                     .to_excel(writer, startcol = 2*i, index = False, header = ["mAh/g(re)", cy.name])                    
+                        )
+                    plt.plot(cy.X, cy.Y*1000/basis, 'o', label = cy.name)
+  
                 leg = plt.legend(fontsize = 'xx-small')
                 for line, text in zip(leg.get_lines(), leg.get_texts()):
                     text.set_color(line.get_color())
                 plt.title("recalculation")
                 plt.xlabel("Cycle nunmber")
-                plt.ylabel("Specific Capacity ($mAh/g$)")
+                plt.ylabel("Specific Capacity ($mAh/g_{re}$)")
                 plt.show()
         
     else:
         with pd.ExcelWriter(f'{output_path}Cycle_tot.xlsx') as writer:
     
             for i, cy in enumerate(exp):
-                cy.data.rename(columns = {"cycle number": "Ah/g", "Capacity (Ah/g)": cy.name}).to_excel(writer, startcol = 2*i, index = False)
-                
-                # df = cy.data[:]
-                # df.columns = ["Ah/g", cy.name]
-                # df.to_excel(writer, startcol = 2*i, index = False)
-                
+                (
+                 cy.data.rename(columns = {"cycle number": "Ah/g", "Capacity": cy.name})
+                 .to_excel(writer, startcol = 2*i, index = False)   
+                    )
+                  
                 
         if convertor != 'n':
-            # basis = float(convertor)/100
+
             with pd.ExcelWriter(f'{output_path}Cycle_recalculation.xlsx') as writer:
 
                 for i, cy in enumerate(exp):
                     quest = input(f"type conversion factor for '{cy.file}' (make sure it means denominator): ")
                     basis = float(quest)
-                    df = cy.data[:]
-                    df["Capacity (Ah/g)"] /= basis
-                    df.columns = ["Ah/g", cy.name]
-                    plt.plot(df[df.columns[0]], df[df.columns[1]], 'o', label = cy.name)
-                    df.to_excel(writer, startcol = 2*i, index = False)
+
+                    (
+                        cy.data[cols].assign(Capacity = cy.data[cols][cy.y]/basis)   
+                        .to_excel(writer, startcol = 2*i, index = False, header = ["Ah/g(re)", cy.name])                    
+                        )
+            
+                    plt.plot(cy.X, cy.Y/basis, 'o', label = cy.name)
                     
                 leg = plt.legend(fontsize = 'xx-small')
                 for line, text in zip(leg.get_lines(), leg.get_texts()):
                     text.set_color(line.get_color())
                 plt.title("recalculation")
                 plt.xlabel("Cycle nunmber")
-                plt.ylabel("Specific Capacity ($Ah/g$)")
+                plt.ylabel("Specific Capacity ($Ah/g_{re}$)")
                 plt.show()
                     
     return output_path
