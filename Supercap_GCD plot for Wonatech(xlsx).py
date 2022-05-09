@@ -75,6 +75,8 @@ class Capacitance(Dataloads):
         # self.df = self.df.iloc[5:]
         self.df.reset_index(drop = True, inplace = True)
         self.idx_list = self.df[self.df["V"] < 0].index
+        self.max_point = None
+        self.half_point = None
         
 
         print(self.idx_list)
@@ -118,7 +120,12 @@ class Capacitance(Dataloads):
         
         plt.plot(self.cycle2["time"], self.cycle2["V"], '--', color = 'gray', label = self.name)
         cap_label = self.get_capacitance()
-        plt.plot(self.max_point, self.half_point, 'r-', label = cap_label)
+
+        try:
+            plt.plot(self.max_point, self.half_point, 'r-', label = cap_label)
+            
+        except:
+            pass
 
         leg = plt.legend()
         for line, text in zip(leg.get_lines(), leg.get_texts()):
@@ -130,24 +137,29 @@ class Capacitance(Dataloads):
         plt.yticks(fontsize = 11)
         
     def get_calculation(self):
-        k = self.cycle2["V"].idxmax()
-        T1, V1 = self.cycle2[["time", "V"]].loc[k]
-        self.discharge = self.cycle2.loc[k:]
-        if V1 > 2.4:
-            idx_list = self.discharge[self.discharge["V"] < 1.5].index
-            T2, V2 = self.cycle2[["time", "V"]].loc[idx_list[0]]
-        else:
-        ###
-            # for 1V calculation
-            n = self.cycle2.shape[0]
-            # n = self.discharge.shape[0]
-            T2, V2= self.cycle2[["time", "V"]].loc[n-1]
-            # T2, V2 = self.discharge.loc[n-1]
-
-        self.max_point = np.array([T1, T2])
-        self.half_point = np.array([V1, V2])
-        self.slope = (T2- T1) /  (V1-V2)
-        self.cap_result = self.Is * self.slope
+        
+        try:
+            k = self.cycle2["V"].idxmax()
+            T1, V1 = self.cycle2[["time", "V"]].loc[k]
+            self.discharge = self.cycle2.loc[k:]
+            if V1 > 2.4:
+                idx_list = self.discharge[self.discharge["V"] < 1.5].index
+                T2, V2 = self.cycle2[["time", "V"]].loc[idx_list[0]]
+            else:
+            ###
+                # for 1V calculation
+                n = self.cycle2.shape[0]
+                # n = self.discharge.shape[0]
+                T2, V2= self.cycle2[["time", "V"]].loc[n-1]
+                # T2, V2 = self.discharge.loc[n-1]
+    
+            self.max_point = np.array([T1, T2])
+            self.half_point = np.array([V1, V2])
+            self.slope = (T2- T1) /  (V1-V2)
+            self.cap_result = self.Is * self.slope
+            return True
+        except:
+            return None
         
     def get_capacitance(self):
 
@@ -155,7 +167,7 @@ class Capacitance(Dataloads):
             self.cap_result *= 1000
             self.cap_unit = 'mF'
             
-        if self.cap_result < 10 and self.cap_unit == 'mF':
+        if self.cap_result < 1 and self.cap_unit == 'mF':
             self.cap_result *= 1000
             self.cap_unit = 'uF'
             
