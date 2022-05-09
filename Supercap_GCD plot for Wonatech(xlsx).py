@@ -50,17 +50,23 @@ class Supercap(Dataloads):
             self.exp_name, ext = os.path.splitext(self.exp_file)
             self.df = pd.read_excel(self.file_path, sheet_name = i+1, header = 0, index_col = 0)
             self.df.columns = ["T", "V", "I"]
-            self.X = self.df.columns[0]
-            self.Y = self.df.columns[1]
-            self.df[self.X] = self.df[self.X].apply(lambda x: x[5:])
-            self.df["min"] = self.df[self.X].apply(lambda x: x.split(':')[0])
-            self.df["sec"] = self.df[self.X].apply(lambda x: x.split(':')[1])      
-            self.df["min"] = self.df["min"].apply(lambda x: int(x))
-            self.df["sec"] = self.df["sec"].apply(lambda x: float(x))
-            self.df["time"] = self.df["min"]*60 + self.df["sec"]
-            self.data = pd.concat([self.df["time"], self.df["V"], self.df["I"]], axis = 1)
+            # self.X = self.df.columns[0]
+            # self.Y = self.df.columns[1]
+            self.df[["day", "hour", "min", "sec" ]] = self.df["T"].str.split(":", expand = True)
+            self.df["time"] = self.df["min"].astype(int) * 60 + self.df["sec"].astype(float)
+  
+            # self.df[self.X] = self.df[self.X].apply(lambda x: x[5:])
+            # self.df["min"] = self.df[self.X].apply(lambda x: x.split(':')[0])
+            # self.df["sec"] = self.df[self.X].apply(lambda x: x.split(':')[1])      
+            # self.df["min"] = self.df["min"].apply(lambda x: int(x))
+            # self.df["sec"] = self.df["sec"].apply(lambda x: float(x))
+            # self.df["time"] = self.df["min"]*60 + self.df["sec"]
+            cols = ["time", "V", "I"]
+            (self.df[cols].to_csv(f'{output_path}{self.exp_name}.csv', encoding = "cp949")
+                )
+            # self.data = pd.concat([self.df["time"], self.df["V"], self.df["I"]], axis = 1)
             # self.df.rename_axis(index = 'index', inplace = True)
-            self.data.to_csv(f'{output_path}{self.exp_name}.csv', encoding = "cp949")
+            # self.data.to_csv(f'{output_path}{self.exp_name}.csv', encoding = "cp949")
             progress_bar(i+1, n)
             # self.data.to_csv(output_path +  self.exp_name +  '.csv', encoding = "cp949")
         print("\n")
