@@ -12,69 +12,50 @@ from matplotlib import pyplot as plt
 import numpy as np
 # from loadexp_0318 import *
 from openpyxl import load_workbook
+import csv
+import tqdm
 # import peakdetect
 
 
 plt.style.use(['science', 'no-latex'])
 year_path  = "D:\\Researcher\\JYCheon\\DATA\\Electrochemistry\\2022\\Raw"
 
-
-
 class Supercap(Dataloads):
     def __init__(self, path, file):
         Dataloads.__init__(self, path, file)
         
-        print(f'Loading {self.file} file......')
+        print(f'Loading {self.file} file....................')
         self.wb = load_workbook(self.file_path)
         self.sheet_count = len(self.wb.sheetnames)
-        # self.info = pd.read_excel(self.file_path, sheet_name = 0, skiprows= 1, skipfooter= 7)
-        # self.exp_file = self.info.columns[0].split('\\')[-1]
-        # self.exp_name, ext = os.path.splitext(self.exp_file)
-        print("done!")
+        self.raw_split = os.path.join(path, 'raw_split\\')
         
-
-    def get_sep(self):
-        # output_path = self.path + 'split\\'
-        output_path = f'{self.path}split\\'
+        if not os.path.exists(self.raw_split):
+            os.mkdir(self.raw_split)
         
-        if not os.path.exists(output_path):
-        
-            os.mkdir(output_path)
-
-        n =self.sheet_count
-        print(f'Splitting {self.sheet_count//2} data to each file.....please wait\n')
-        progress_bar(0, n)
         for i in range(0, self.sheet_count, 2):
-            self.info = pd.read_excel(self.file_path, sheet_name = i, skiprows= 1, skipfooter= 7)
-            self.exp_file = self.info.columns[0].split('\\')[-1]
-            self.exp_name, ext = os.path.splitext(self.exp_file)
-            self.df = pd.read_excel(self.file_path, sheet_name = i+1, header = 0, index_col = 0)
-            self.df.columns = ["T", "V", "I"]
-            # self.X = self.df.columns[0]
-            # self.Y = self.df.columns[1]
-            self.df[["day", "hour", "min", "sec" ]] = self.df["T"].str.split(":", expand = True)
-            self.df["time"] = self.df["min"].astype(int) * 60 + self.df["sec"].astype(float)
-  
-            # self.df[self.X] = self.df[self.X].apply(lambda x: x[5:])
-            # self.df["min"] = self.df[self.X].apply(lambda x: x.split(':')[0])
-            # self.df["sec"] = self.df[self.X].apply(lambda x: x.split(':')[1])      
-            # self.df["min"] = self.df["min"].apply(lambda x: int(x))
-            # self.df["sec"] = self.df["sec"].apply(lambda x: float(x))
-            # self.df["time"] = self.df["min"]*60 + self.df["sec"]
-            cols = ["time", "V", "I"]
-            (self.df[cols].to_csv(f'{output_path}{self.exp_name}.csv', encoding = "cp949")
-                )
-            # self.data = pd.concat([self.df["time"], self.df["V"], self.df["I"]], axis = 1)
-            # self.df.rename_axis(index = 'index', inplace = True)
-            # self.data.to_csv(f'{output_path}{self.exp_name}.csv', encoding = "cp949")
-            progress_bar(i+1, n)
-            # self.data.to_csv(output_path +  self.exp_name +  '.csv', encoding = "cp949")
-        print("\n")
+            name = self.wb[self.wb.sheetnames[i]]["A2"].value.split('\\')[-1].replace('.wrd', "")                                                                      
+            ws = self.wb[self.wb.sheetnames[i+1]]
+            
+            with open(f'{self.raw_split}{name}.csv', 'w', newline = "") as f:
+                csv_writer = csv.writer(f)
+                for r in ws.iter_rows():
+                # for r in tqdm(ws.iter_rows()):
+                    csv_writer.writerow([cell.value for cell in r])
+            
+            
+        # print("done!")
 
 class Capacitance(Dataloads):
     def __init__(self, path, file):
         Dataloads.__init__(self, path, file)
-        self.df = pd.read_csv(self.file_path, index_col = 0, encoding = "cp949", header = 0)
+        self.raw = pd.read_csv(self.file_path, header = 0, index_col = 0, sep = ",", encoding = "cp949")
+        self.raw.columns = ["T", "V", "I"]
+        self.raw[["day", "hour", "min", "sec" ]] = self.raw["T"].str.split(":", expand = True).astype(float)
+        self.raw["time"] = self.raw["min"]*60 + self.raw["sec"]
+        self.cols = ["time", "V", "I"]
+        self.df = self.raw[self.cols]
+
+        # self.df = pd.read_csv(self.file_path, index_col = 0, encoding = "cp949", header = 0)
         
         self.null = self.df[self.df["I"] == 0].index
         self.df = self.df.drop(self.null)
@@ -83,10 +64,10 @@ class Capacitance(Dataloads):
         self.idx_list = self.df[self.df["V"] < 0].index
         self.max_point = None
         self.half_point = None
-        
-
-        print(self.idx_list)
-        print(len(self.idx_list))
+        # print(list(self.idx_list))
+        # print(len(self.idx_list))
+        if len(self.idx_list) != 4:
+            print(f'{self.file} may have some error please check')
         self.appl_current = abs(self.df.iloc[0, 2]) # A
         self.appl_unit = 'A'
         
@@ -98,21 +79,16 @@ class Capacitance(Dataloads):
             self.appl_current *= 1000
             self.appl_unit = 'uA'
         
-        
-        
         self.Is = abs(self.df.iloc[0, 2]) # A
         self.input = abs(self.Is) * 1000000 # uA
         self.idxx = list(self.idx_list)
-        self.cycle2 = self.df.iloc[self.idxx[1]:self.idxx[2]].copy()
-        
-        self.cycle2.reset_index(drop = True, inplace = True)
+        self.cycle2 = self.df[self.cols].iloc[self.idxx[1]:self.idxx[2]].reset_index(drop = True)
+        # self.cycle2.reset_index(drop = True, inplace = True)
         self.origin = self.cycle2["time"].loc[0]
-
-
         self.cycle2["time"] -= self.origin
         if self.cycle2["V"].loc[0] < 0:
-            self.cycle2.drop(index = 0)
-            self.cycle2.reset_index(drop = True, inplace = True)
+            self.cycle2.drop(index = 0).reset_index(drop = True, inplace = True)
+            # self.cycle2.reset_index(drop = True, inplace = True)
        
         self.cap_result = 0
         self.cap_unit = 'F'
@@ -133,7 +109,7 @@ class Capacitance(Dataloads):
         except:
             pass
 
-        leg = plt.legend()
+        leg = plt.legend(fontsize = 'small')
         for line, text in zip(leg.get_lines(), leg.get_texts()):
             text.set_color(line.get_color())
         plt.xlabel('Time (s)', fontsize = 13)
@@ -221,7 +197,7 @@ def get_export(exp_obj, path):
     # with pd.ExcelWriter(output_path + "GCD_tot.xlsx") as writer:
     with pd.ExcelWriter(f'{output_path}\\GCD_tot.xlsx') as writer:
         n = len(exp_obj)
-        print("exporting...\n")
+        print("exporting............\n")
         progress_bar(0, n)
         for i, gcd in enumerate(exp_obj):
             cols = ["time", "V"]
@@ -234,16 +210,27 @@ def get_export(exp_obj, path):
             progress_bar(i+1, n)
         df1.to_excel(writer, sheet_name = 'Summary')
         
+    with pd.ExcelWriter(f'{output_path}Raw_tot.xlsx') as writer:
+        n = len(exp_obj)
+        progress_bar(0, n)
+        for ix, exp in enumerate(exp_obj):
+            cols = ["time", "V"]
+            (
+                exp.raw[cols].to_excel(writer, startcol = 2*ix, index = False, header = [f'{ix}, {exp.get_condition()}', exp.name])
+                )
+            progress_bar(i+1, n)
+        
         
 raw, path, _, _ = fileloads(year_path, ".xlsx")
-if not os.path.exists(f'{path}split\\'):
+if not os.path.exists(f'{path}raw_split\\'):
     
     exp_obj = build_data(path, raw, Supercap)
-    exp_obj[0].get_sep()
+    
+#     exp_obj[0].get_sep()
 
 
-# exp_path = path + 'split\\'
-exp_path = f'{path}split\\'
+# exp_path = path + 'raw_split\\'
+exp_path = f'{path}raw_split\\'
 exp_list = [_ for _ in os.listdir(exp_path) if _.endswith(".csv") ]
 
 sep_obj = build_data(exp_path, exp_list, Capacitance)

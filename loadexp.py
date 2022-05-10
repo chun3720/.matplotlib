@@ -6,7 +6,6 @@ last update : Feb 15 2022
 """
 
 import os
-import string
 from dataclasses import dataclass
 from typing import List
 
@@ -35,7 +34,7 @@ def path_gen(path: str, file_ext: str = None) -> str:
         print('==========================================')       
         return path_dict
 
-def get_sort(listitem: List, KeyFunction: object) -> List:
+def get_sort(listitem: List, KeyFunction: object) -> List[str]:
     sorted_list = sorted(listitem, key = KeyFunction)
     return sorted_list
 
@@ -83,7 +82,6 @@ def progress_bar(progress: int, total: int) -> None:
 #         # self.name, self.ext = self.file.split('.')
 #         self.name, self.ext = os.path.splitext(self.file)
         
-    
 @dataclass
 class Dataloads:
     path : str
@@ -100,6 +98,7 @@ def build_data(path: str, file: str, builder: object) -> object:
     data = []
        
     for item in file:
+        # data.append(builder(path, item))
         try:
             data.append(builder(path, item))
         except:
