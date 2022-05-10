@@ -24,7 +24,7 @@ class Supercap(Dataloads):
     def __init__(self, path, file):
         Dataloads.__init__(self, path, file)
         
-        print(f'Loading {self.file} file....................')
+        print(f'Loading and splitting {self.file} file....................')
         self.wb = load_workbook(self.file_path)
         self.sheet_count = len(self.wb.sheetnames)
         self.raw_split = os.path.join(path, 'raw_split\\')
