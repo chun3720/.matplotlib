@@ -64,10 +64,12 @@ class Capacitance(Dataloads):
         self.idx_list = self.df[self.df["V"] < 0].index
         self.max_point = None
         self.half_point = None
-        # print(list(self.idx_list))
+        
+        print(f'{self.file}: {len(self.idx_list)} cycles')
+        # print(list(self.idx_list), len(self.idx_list) )
         # print(len(self.idx_list))
-        if len(self.idx_list) != 4:
-            print(f'{self.file} may have some error please check')
+        # if len(self.idx_list) != 4:
+        #     print(f'{self.file} may have some error please check')
         self.appl_current = abs(self.df.iloc[0, 2]) # A
         self.appl_unit = 'A'
         
@@ -170,8 +172,14 @@ def get_cap_result(exp_obj, path):
 def get_multiplot(exp_obj, path):
     
     for exp in exp_obj:
-        plt.plot(exp.cycle2["time"], exp.cycle2["V"])
-        
+        plt.plot(exp.cycle2["time"], exp.cycle2["V"], label = exp.name)
+    
+    leg = plt.legend(fontsize = 'xx-small')
+    
+    for line, text in zip(leg.get_lines(), leg.get_texts()):
+        text.set_color(line.get_color())
+    
+    
     plt.show()
     
 def get_export(exp_obj, path):
