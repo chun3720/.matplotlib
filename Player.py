@@ -9,6 +9,7 @@ import os
 import importlib
 import ForMatplotlib
 
+data_path = r"D:\Researcher\JYCheon\DATA"
 
 path = os.getcwd()
 code_list = [_ for _ in os.listdir(path) if _.endswith(".py")]
@@ -37,4 +38,5 @@ module = importlib.import_module(package_to_load)
 
 print("\n\n")
 print(f"Current package: {package_to_load}\n")
-module.main()
+
+module.main(data_path)

@@ -8,6 +8,7 @@ last update : Feb 15 2022
 import os
 from dataclasses import dataclass
 from typing import List
+from pathlib import Path
 
 def path_gen(path: str, file_ext: str = None) -> str:
     print('\nCurrent path: ')
@@ -54,19 +55,25 @@ def raw_check(path: str, file_ext: str) -> List:
 
 def fileloads(year_path: str, file_ext: str) -> List:  
     year_dict = path_gen(year_path)
-    folder_select = input("Select folder to analyze : ")
+    folder_select = input("Select folder to analyze, (move to parent path: type(.):  ")
+    
+    if folder_select != ".":
         
-    # date_path = year_path + '\\' + year_dict[int(folder_select)] + '\\'
-    date_path = os.path.join(year_path, year_dict[int(folder_select)]) + '\\'
-    list_check = raw_check(date_path, file_ext) 
-    if len(list_check) !=0:
-        list_true = list_check
-        path_true = date_path
-        path_gen(path_true, file_ext)
-        EXP_title = year_dict[int(folder_select)].replace("_", "-")
-        return (list_true, path_true, year_dict[int(folder_select)], EXP_title)  
-    else:
-        return fileloads(date_path, file_ext)
+        # date_path = year_path + '\\' + year_dict[int(folder_select)] + '\\'
+        date_path = os.path.join(year_path, year_dict[int(folder_select)]) + '\\'
+        list_check = raw_check(date_path, file_ext) 
+        if len(list_check) !=0:
+            list_true = list_check
+            path_true = date_path
+            path_gen(path_true, file_ext)
+            EXP_title = year_dict[int(folder_select)].replace("_", "-")
+            return (list_true, path_true, year_dict[int(folder_select)], EXP_title)  
+        else:
+            return fileloads(date_path, file_ext)
+    elif folder_select == ".":
+        parent_path = Path(year_path).parent
+        
+        return fileloads(parent_path, file_ext)
 
 def progress_bar(progress: int, total: int) -> None:
     percent = 100 * (progress / float(total))

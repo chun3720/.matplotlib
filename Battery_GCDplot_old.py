@@ -133,8 +133,8 @@ def get_export(path, exp):
             df.to_excel(writer, startcol = 4*ix, index = False)
             progress_bar(i+1, n)
 
-def main() -> None:
-    raw_list, path, _ , _ = fileloads(year_path, '.xlsx')
+def main(data_path = year_path) -> None:
+    raw_list, path, _ , _ = fileloads(date_path, '.xlsx')
     exp_data = build_data(path, raw_list, LIB_builder)
     get_plot(path, exp_data)
     get_result(path, exp_data)

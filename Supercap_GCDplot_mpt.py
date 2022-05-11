@@ -312,8 +312,8 @@ def get_multiplot(exp, path):
         plt.ylabel("Current (mA)")
         plt.show()
         
-def main():
-    raw_list, path, _, _ = fileloads(year_path, '.mpt')
+def main(date_path = year_path):
+    raw_list, path, _, _ = fileloads(date_path, '.mpt')
     exp_obj = build_data(path, raw_list, EC_measurement)
     
     

@@ -151,9 +151,9 @@ def get_multiplot(exp):
      
 
 
-def main():
+def main(date_path = year_path):
 
-    raw_list, path, _, _ = fileloads(year_path, '.csv')
+    raw_list, path, _, _ = fileloads(date_path, '.csv')
     exp = build_data(path, raw_list, N2_sorption)
     
     plot(exp)

@@ -157,9 +157,9 @@ def cycle_plt(exp):
     plt.ylabel("Specific Capacity ($Ah/g$)")
     plt.show()
 
-def main():
+def main(date_path = year_path):
     
-    raw, path, _, _ = fileloads(year_path, ".xlsx")
+    raw, path, _, _ = fileloads(date_path, ".xlsx")
     exp_data = build_data(path, raw, LIB_tot)
     
     cycle_plt(exp_data)

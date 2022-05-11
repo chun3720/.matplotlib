@@ -165,8 +165,8 @@ def get_export(path, exp, dlc_df, exp_path):
             exp[i].df.to_excel(writer, sheet_name = 'CV', startcol = 2*i, index=False )
         dlc_df.to_excel(writer, sheet_name = 'DLC')
 
-def main():
-    file_list, path_dir, exp_path, exp_title = fileloads(year_path, '.txt')
+def main(date_path = year_path):
+    file_list, path_dir, exp_path, exp_title = fileloads(date_path, '.txt')
     # condition_list = specific(get_specific, file_list)
     condition_list = [get_specific(_) for _ in file_list]
     # condition_test = [get_test(_) for _ in file_list]
