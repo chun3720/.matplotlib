@@ -245,86 +245,91 @@ def csv_from_excel(path, file):
     
 # runs the csv_from_excel function:
 
-done0 =  False    
-
-while not done0:
-    get_input = input("select data file extension, xlsx (x) or csv(c): ")    
-    if get_input in ["X", "x", "C", "c"]:
-        done0 = True
-    else:
-        print("typing error!")
-
-if get_input.lower() == "x":
-    ext = 'xlsx'
-elif get_input.lower() == "c":
-    ext = "csv"
-
-raw, path, _, _ = fileloads(year_path, ext)
-
-if get_input == "x" and len(raw) > 1:
-    import Battery_GCDplot_old as xl
-    exp_obj = build_data(path, raw, xl.LIB_builder)
-    xl.get_plot(path, exp_obj)
-    xl.get_result(path, exp_obj)
-    xl.get_export(path, exp_obj)
     
-elif get_input == "c" and len(raw) > 1:
-    exp_obj= build_data(path, raw, LIB_csv)
-    get_plot(path, exp_obj, k=1)
-    get_result(path, exp_obj, k=1)
-    get_export(path, exp_obj, k=1)
-  
-
-else:
-
-    if (os.path.splitext(raw[0])[0] + ".csv") not in os.listdir(path):
-        csv_from_excel(path, raw[0])
-        csv_list = [_ for _ in os.listdir(path) if _.endswith(".csv")]
-    else:
-        csv_list = [_ for _ in os.listdir(path) if _.endswith(".csv")]
-        
+def main():
+    done0 =  False    
     
-    exp_data = build_data(path, csv_list, LIB_tot)
-    exp_data[0].get_check()
-    done1 = False
-    while not done1:
-        electrode = input("which electrode? a, anode or c, cathode: ")
-        
-        if electrode in ['A', 'a', 'c', "C"]:
-            done1 = True
-        else:
-            print("typing error!")         
-        
-    electrode = electrode.lower()
-    done2 =  False
-    while not done2:
-        cutoff = input("type cutoff voltage for each cycle (anode-> top, cathode -> bottom): ")
-        if cutoff[0].isnumeric():
-            done2 = True
+    while not done0:
+        get_input = input("select data file extension, xlsx (x) or csv(c): ")    
+        if get_input in ["X", "x", "C", "c"]:
+            done0 = True
         else:
             print("typing error!")
+    
+    if get_input.lower() == "x":
+        ext = 'xlsx'
+    elif get_input.lower() == "c":
+        ext = "csv"
+    
+    raw, path, _, _ = fileloads(year_path, ext)
+    
+    if get_input == "x" and len(raw) > 1:
+        import Battery_GCDplot_old as xl
+        exp_obj = build_data(path, raw, xl.LIB_builder)
+        xl.get_plot(path, exp_obj)
+        xl.get_result(path, exp_obj)
+        xl.get_export(path, exp_obj)
+        
+    elif get_input == "c" and len(raw) > 1:
+        exp_obj= build_data(path, raw, LIB_csv)
+        get_plot(path, exp_obj, k=1)
+        get_result(path, exp_obj, k=1)
+        get_export(path, exp_obj, k=1)
+      
+    
+    else:
+    
+        if (os.path.splitext(raw[0])[0] + ".csv") not in os.listdir(path):
+            csv_from_excel(path, raw[0])
+            csv_list = [_ for _ in os.listdir(path) if _.endswith(".csv")]
+        else:
+            csv_list = [_ for _ in os.listdir(path) if _.endswith(".csv")]
             
-    
-    output_path = exp_data[0].separation(electrode, float(cutoff))
-    
-    raw_list = os.listdir(output_path)
-    raw_list = [_ for _ in raw_list if _.endswith(".csv")]
-    sorted_list = sorted(raw_list, key = len)
-    exp_obj = build_data(output_path, sorted_list , LIB_csv)
-    
-    done3 = False
-    while not done3:
         
-        k = input("type separation unit: ")
+        exp_data = build_data(path, csv_list, LIB_tot)
+        exp_data[0].get_check()
+        done1 = False
+        while not done1:
+            electrode = input("which electrode? a, anode or c, cathode: ")
+            
+            if electrode in ['A', 'a', 'c', "C"]:
+                done1 = True
+            else:
+                print("typing error!")         
+            
+        electrode = electrode.lower()
+        done2 =  False
+        while not done2:
+            cutoff = input("type cutoff voltage for each cycle (anode-> top, cathode -> bottom): ")
+            if cutoff[0].isnumeric():
+                done2 = True
+            else:
+                print("typing error!")
+                
         
-        if k[0].isnumeric():
-            done3 = True
-        else:
-            print("typing error!")
-    k = int(k)
-    def final_plot(output_path, exp_obj, k):
-        get_plot(output_path, exp_obj, k)
-        get_result(output_path, exp_obj, k)
-        get_export(output_path, exp_obj, k)
+        output_path = exp_data[0].separation(electrode, float(cutoff))
         
-    final_plot(output_path, exp_obj, k)
+        raw_list = os.listdir(output_path)
+        raw_list = [_ for _ in raw_list if _.endswith(".csv")]
+        sorted_list = sorted(raw_list, key = len)
+        exp_obj = build_data(output_path, sorted_list , LIB_csv)
+        
+        done3 = False
+        while not done3:
+            
+            k = input("type separation unit: ")
+            
+            if k[0].isnumeric():
+                done3 = True
+            else:
+                print("typing error!")
+        k = int(k)
+        def final_plot(output_path, exp_obj, k):
+            get_plot(output_path, exp_obj, k)
+            get_result(output_path, exp_obj, k)
+            get_export(output_path, exp_obj, k)
+            
+        final_plot(output_path, exp_obj, k)
+        
+if __name__ == "__main__":
+    main()

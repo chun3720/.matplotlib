@@ -157,16 +157,20 @@ def cycle_plt(exp):
     plt.ylabel("Specific Capacity ($Ah/g$)")
     plt.show()
 
-
-raw, path, _, _ = fileloads(year_path, ".xlsx")
-exp_data = build_data(path, raw, LIB_tot)
-
-cycle_plt(exp_data)
-# cycle_sns(exp_data)
-check = input("convert to mAh/g? yes (y) or no(n) :")
-convertor  = input("want to recalculate ? yes (y) or no(n) :")
-
-out_path = get_export(exp_data, path, check, convertor)
+def main():
+    
+    raw, path, _, _ = fileloads(year_path, ".xlsx")
+    exp_data = build_data(path, raw, LIB_tot)
+    
+    cycle_plt(exp_data)
+    # cycle_sns(exp_data)
+    check = input("convert to mAh/g? yes (y) or no(n) :")
+    convertor  = input("want to recalculate ? yes (y) or no(n) :")
+    
+    out_path = get_export(exp_data, path, check, convertor)
+    
+if __name__ == "__main__":
+    main()
 
 
 

@@ -108,19 +108,6 @@ def get_export(exp, path):
             pass
         
 
-raw_list, path, _, _ = fileloads(year_path, '.csv')
-exp = build_data(path, raw_list, N2_sorption)
-
-plot(exp)
-get_export(exp, path)
-
-output_path = path + "\\export"
-output_list = [_ for _ in os.listdir(output_path) if _.endswith(".xlsx")]
-
-print(output_list)
-# isotherm_dfs = build_data(output_path, output_list, N2_Multi)
-
-
 def get_multiplot(exp):
     isotherm_list = exp[-1].isotherms
     color_list = ['k', 'r', 'tab:orange', 'g', 'b', 'purple', 'c', 'm', 'k', 'r', 'tab:orange', 'g', 'b', 'purple']
@@ -162,8 +149,25 @@ def get_multiplot(exp):
         
     plt.savefig(exp[-1].output +"Total.png", dpi = 600)
      
-        
-get_multiplot(exp)
+
+
+def main():
+
+    raw_list, path, _, _ = fileloads(year_path, '.csv')
+    exp = build_data(path, raw_list, N2_sorption)
+    
+    plot(exp)
+    get_export(exp, path)
+    
+    output_path = path + "\\export"
+    output_list = [_ for _ in os.listdir(output_path) if _.endswith(".xlsx")]
+    
+    print(output_list)
+    # isotherm_dfs = build_data(output_path, output_list, N2_Multi)
+    get_multiplot(exp)
+    
+if __name__ == "__main__":
+    main()
     
     
 # get_multiBET(isotherm_dfs, output_path)

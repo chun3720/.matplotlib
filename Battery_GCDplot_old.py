@@ -133,11 +133,17 @@ def get_export(path, exp):
             df.to_excel(writer, startcol = 4*ix, index = False)
             progress_bar(i+1, n)
 
-if __name__=="__main__":
+def main() -> None:
     raw_list, path, _ , _ = fileloads(year_path, '.xlsx')
     exp_data = build_data(path, raw_list, LIB_builder)
     get_plot(path, exp_data)
     get_result(path, exp_data)
     get_export(path, exp_data)
+
+    
+
+
+if __name__=="__main__":
+    main()
 
 

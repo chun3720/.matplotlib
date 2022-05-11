@@ -312,17 +312,19 @@ def get_multiplot(exp, path):
         plt.ylabel("Current (mA)")
         plt.show()
         
-        
-raw_list, path, _, _ = fileloads(year_path, '.mpt')
-exp_obj = build_data(path, raw_list, EC_measurement)
-
-
-# for i in range(len(exp_obj)):
-for exp in exp_obj:
-    exp.get_calculation()
-    exp.get_plot(path)
+def main():
+    raw_list, path, _, _ = fileloads(year_path, '.mpt')
+    exp_obj = build_data(path, raw_list, EC_measurement)
     
-get_multiplot(exp_obj, path)
-get_export(exp_obj, path)
+    
+    # for i in range(len(exp_obj)):
+    for exp in exp_obj:
+        exp.get_calculation()
+        exp.get_plot(path)
+        
+    get_multiplot(exp_obj, path)
+    get_export(exp_obj, path)
 
+if __name__ == "__main__":
+    main()
 

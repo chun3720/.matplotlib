@@ -228,22 +228,27 @@ def get_export(exp_obj, path):
                 )
             progress_bar(i+1, n)
         
+
+
+def main():    
+    raw, path, _, _ = fileloads(year_path, ".xlsx")
+    if not os.path.exists(f'{path}raw_split\\'):
         
-raw, path, _, _ = fileloads(year_path, ".xlsx")
-if not os.path.exists(f'{path}raw_split\\'):
+        exp_obj = build_data(path, raw, Supercap)
+        
+    #     exp_obj[0].get_sep()
     
-    exp_obj = build_data(path, raw, Supercap)
     
-#     exp_obj[0].get_sep()
+    # exp_path = path + 'raw_split\\'
+    exp_path = f'{path}raw_split\\'
+    exp_list = [_ for _ in os.listdir(exp_path) if _.endswith(".csv") ]
+    
+    sep_obj = build_data(exp_path, exp_list, Capacitance)
+    
+    
+    get_cap_result(sep_obj, exp_path)
+    get_multiplot(sep_obj, exp_path)
+    get_export(sep_obj, exp_path)
 
-
-# exp_path = path + 'raw_split\\'
-exp_path = f'{path}raw_split\\'
-exp_list = [_ for _ in os.listdir(exp_path) if _.endswith(".csv") ]
-
-sep_obj = build_data(exp_path, exp_list, Capacitance)
-
-
-get_cap_result(sep_obj, exp_path)
-get_multiplot(sep_obj, exp_path)
-get_export(sep_obj, exp_path)
+if __name__ == "__main__":
+    main()
