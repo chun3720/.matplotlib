@@ -93,11 +93,7 @@ class LIB_tot(Dataloads):
             .parent
             .joinpath("cycle_auto")
             )
-        
-        
-        # _path = Path(self.path)
-        # parent_path = _path.parent
-        # new_path = parent_path.joinpath('cycle_auto')
+
         if not cycle_path.exists():
             cycle_path.mkdir()
         
@@ -246,7 +242,7 @@ def csv_from_excel(path, file):
 # runs the csv_from_excel function:
 
     
-def main():
+def main(date_path = year_path):
     done0 =  False    
     
     while not done0:
@@ -261,7 +257,7 @@ def main():
     elif get_input.lower() == "c":
         ext = "csv"
     
-    raw, path, _, _ = fileloads(year_path, ext)
+    raw, path, _, _ = fileloads(date_path, ext)
     
     if get_input == "x" and len(raw) > 1:
         import Battery_GCDplot_old as xl

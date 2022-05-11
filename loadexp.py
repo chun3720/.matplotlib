@@ -16,21 +16,22 @@ def path_gen(path: str, file_ext: str = None) -> str:
     print(path)
     print('-------------------------------------------------------------------------------------------')
     path_folder = os.listdir(path)
-    path_dict = {}
+    
+    
+    # path_dict = {}
     if file_ext == None:
-        for index, i in enumerate(path_folder):
-            path_dict[index] = i
-        for i in path_dict:
-            print(f'{i} : {path_dict[i]}')
+        path_dict = {i:val for i, val in enumerate(path_folder)}
+        
+        for key, val in path_dict.items():
+            print(f'{key} : {val}')
             
         return path_dict
     
     elif file_ext != None:
         path_folder = [_ for _ in path_folder if _.endswith(file_ext)]
-        for index, i in enumerate(path_folder):
-            path_dict[index] = i
-        for i in path_dict:
-            print(f'{i} : {path_dict[i]}')
+        path_dict = {i:val for i, val in enumerate(path_folder)}
+        for key, val in path_dict.items():
+            print(f'{key} : {val}')
             
         print('==========================================')       
         return path_dict

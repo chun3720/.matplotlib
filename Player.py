@@ -14,12 +14,8 @@ data_path = r"D:\Researcher\JYCheon\DATA"
 path = os.getcwd()
 code_list = [_ for _ in os.listdir(path) if _.endswith(".py")]
 to_ignore = ["__init__.py", "loadexp.py", "Player.py"]
-codes = [_ for _ in code_list if _ not in to_ignore]
-
-code_dict = {}
-
-for i, code in enumerate(codes):
-    code_dict[i] = code
+codes = [_ for _ in code_list if _ not in to_ignore]    
+code_dict = {i:code for i, code in enumerate(codes)}
     
 
 for key, value in code_dict.items():
@@ -39,4 +35,4 @@ module = importlib.import_module(package_to_load)
 print("\n\n")
 print(f"Current package: {package_to_load}\n")
 
-module.main(data_path)
+module.main()
