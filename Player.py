@@ -17,7 +17,9 @@ data_path = r"D:\Researcher\JYCheon\DATA"
 
 path = os.getcwd()
 parent_path = Path(path).parent
-sys.path.append(str(parent_path))
+
+if str(parent_path) not in sys.path:
+    sys.path.append(str(parent_path))
 
 
 import ForMatplotlib
@@ -45,3 +47,4 @@ print("\n\n")
 print(f"Current package: {package_to_load}\n")
 
 module.main()
+# module.main(data_path)

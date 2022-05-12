@@ -205,7 +205,8 @@ def get_export(exp_obj, path):
     # with pd.ExcelWriter(output_path + "GCD_tot.xlsx") as writer:
     with pd.ExcelWriter(f'{output_path}\\GCD_tot.xlsx') as writer:
         n = len(exp_obj)
-        print("exporting............\n")
+        print("\n")
+        print("exporting...................\n")
         progress_bar(0, n)
         for i, gcd in enumerate(exp_obj):
             cols = ["time", "V"]
@@ -235,17 +236,10 @@ def main(date_path = year_path):
     if not os.path.exists(f'{path}raw_split\\'):
         
         exp_obj = build_data(path, raw, Supercap)
-        
-    #     exp_obj[0].get_sep()
-    
-    
-    # exp_path = path + 'raw_split\\'
     exp_path = f'{path}raw_split\\'
     exp_list = [_ for _ in os.listdir(exp_path) if _.endswith(".csv") ]
     
     sep_obj = build_data(exp_path, exp_list, Capacitance)
-    
-    
     get_cap_result(sep_obj, exp_path)
     get_multiplot(sep_obj, exp_path)
     get_export(sep_obj, exp_path)

@@ -71,6 +71,7 @@ def fileloads(year_path: str, file_ext: str) -> List:
             return (list_true, path_true, year_dict[int(folder_select)], EXP_title)  
         else:
             return fileloads(date_path, file_ext)
+        
     elif folder_select == ".":
         parent_path = Path(year_path).parent
         
@@ -106,12 +107,12 @@ def build_data(path: str, file: str, builder: object) -> object:
     data = []
        
     for item in file:
-        data.append(builder(path, item))
-        # try:
-        #     data.append(builder(path, item))
-        # except:
-        #     print(f'fail to load {item} file')
-        #     pass
+        # data.append(builder(path, item))
+        try:
+            data.append(builder(path, item))
+        except:
+            print(f'fail to load {item} file')
+            pass
     return data
 
 # from datetime import datetime
