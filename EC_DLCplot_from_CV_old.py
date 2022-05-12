@@ -8,8 +8,9 @@ from loadexp import *
 import pandas as pd
 import os
 import numpy as np
-# from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
+# from scipy.optimize import curve_fit
+
 # from sklearn.linear_model import HuberRegressor
 plt.style.use(['science', 'no-latex'])
 year_path  = "D:\\Researcher\\JYCheon\\DATA\\Electrochemistry\\2021\\Raw"
@@ -159,10 +160,10 @@ def get_specific(name, num = -1):
         return get_test(name, num-1)
     
 
-def get_export(path, exp, dlc_df, exp_path):
+def get_export(path, exp_data, dlc_df, exp_path):
     with pd.ExcelWriter(path + exp_path +'_DLC.xlsx') as writer:
-        for i in range(len(exp_data)):
-            exp[i].df.to_excel(writer, sheet_name = 'CV', startcol = 2*i, index=False )
+        for i, exp in enumerate(exp_data):
+            exp.df.to_excel(writer, sheet_name = 'CV', startcol = 2*i, index=False )
         dlc_df.to_excel(writer, sheet_name = 'DLC')
 
 def main(date_path = year_path):
