@@ -7,11 +7,30 @@ Created on Wed May 11 10:51:00 2022
 
 import os
 import importlib
-import ForMatplotlib
+
+from pathlib import Path
+
+
+env = os.environ
+
+
+
 
 data_path = r"D:\Researcher\JYCheon\DATA"
-
 path = os.getcwd()
+parent_path = Path(path).parent
+
+
+
+new_path = str(parent_path) + env["PATH"]
+
+env["PATH"] = new_path
+
+
+
+
+
+
 code_list = [_ for _ in os.listdir(path) if _.endswith(".py")]
 to_ignore = ["__init__.py", "loadexp.py", "Player.py"]
 codes = [_ for _ in code_list if _ not in to_ignore]    
@@ -27,7 +46,7 @@ chosen = int(selector)
 
 to_import = code_dict[chosen][:-3]
 
-
+import ForMatplotlib
 package_to_load = f'ForMatplotlib.{to_import}'
 module = importlib.import_module(package_to_load)
     
