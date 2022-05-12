@@ -8,10 +8,10 @@ from loadexp import *
 import pandas as pd
 import os
 import numpy as np
-from scipy.optimize import curve_fit
+# from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
-from sklearn.linear_model import HuberRegressor
-plt.style.use('science')
+# from sklearn.linear_model import HuberRegressor
+plt.style.use(['science', 'no-latex'])
 year_path  = "D:\\Researcher\\JYCheon\\DATA\\Electrochemistry\\2021\\Raw"
     
 def dlc_func(x, a, b):   

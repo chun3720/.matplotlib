@@ -12,7 +12,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 # import shutil
 # from loadexp_0318 import *
-plt.style.use('science')
+plt.style.use(['science', 'no-latex'])
 
 year_path  = "D:\\Researcher\\JYCheon\\DATA\\Electrochemistry\\2022\\Raw"
 

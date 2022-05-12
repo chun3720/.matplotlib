@@ -231,7 +231,7 @@ def get_export(exp_obj, path):
 
 
 def main(date_path = year_path):    
-    raw, path, _, _ = fileloads(data_path, ".xlsx")
+    raw, path, _, _ = fileloads(date_path, ".xlsx")
     if not os.path.exists(f'{path}raw_split\\'):
         
         exp_obj = build_data(path, raw, Supercap)

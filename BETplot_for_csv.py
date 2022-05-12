@@ -16,7 +16,7 @@ import pygaps.characterisation as pgc
 from pygaps.graphing.calc_graphs import psd_plot
 
 
-plt.style.use("science")
+plt.style.use(['science', 'no-latex'])
 year_path = "D:\\Researcher\\JYCheon\\DATA\\BET"
 
 class N2_sorption(Dataloads):

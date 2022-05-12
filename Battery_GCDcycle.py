@@ -10,7 +10,7 @@ import os
 import string
 import numpy as np
 from matplotlib import pyplot as plt
-import seaborn as sns
+
 # plt.style.use(['science', 'grid'])
 plt.style.use(['science', 'no-latex'])
 year_path = r"D:\Researcher\JYCheon\DATA\Electrochemistry\Coin cell\2022"
