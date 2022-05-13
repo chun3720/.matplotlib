@@ -21,7 +21,6 @@ parent_path = Path(path).parent
 if str(parent_path) not in sys.path:
     sys.path.append(str(parent_path))
 
-
 import ForMatplotlib
 
 code_list = [_ for _ in os.listdir(path) if _.endswith(".py")]
