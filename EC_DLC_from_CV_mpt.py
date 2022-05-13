@@ -26,8 +26,6 @@ class DLC_builder(Dataloads):
             
         self.header = int(header)
         self.df = pd.read_csv(self.file_path, skiprows = self.header-1, sep = '\t', header = 0)
-        
-
         self.df.drop(columns = ['mode', 'ox/red', 'error', 'counter inc.', 'P/W', 'Unnamed: 12' ], inplace = True)
         t1, v1 = self.df[["time/s", "control/V"]].loc[1]
         t2, v2 = self.df[["time/s", "control/V"]].loc[2]
@@ -122,7 +120,6 @@ def get_export(path, exp_obj, dlc_df, exp_name):
             label = f'{exp.rate} mV/s'
             exp.df[["Ewe/V", "<I>/mA"]].to_excel(writer, sheet_name = 'CV', startcol = 2*i, index = False, header = [f'{i}', label])
         dlc_df.to_excel(writer, sheet_name = 'DLC')
-    
 
 def main(date_path = year_path):
         
@@ -132,7 +129,6 @@ def main(date_path = year_path):
     get_plot(exp_obj, exp_name)
     dlc_df = get_DLCplot(path_dir, exp_obj, exp_name)
     get_export(path_dir, exp_obj, dlc_df, exp_name)
-
 
 if __name__ == "__main__":
     main()

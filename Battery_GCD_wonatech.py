@@ -37,30 +37,32 @@ class LIB_tot(Dataloads):
     def separation(self, electrode, cut_off):
         if electrode == 'a':
             if self.raw.iloc[0, 1] > cut_off:
-                
-                null = self.raw[self.raw[self.Y] < cut_off].index
-                self.data = self.raw.iloc[null[0]:]
-                self.data = self.data.reset_index(drop = True)
-                self.data = self.data.drop(index = 0)
-                self.idx_list_values = self.data[self.data[self.Y] > cut_off].index
+                null = self.raw[self.raw[self.Y] < cut_off].index 
+                self.data = (
+                    self.raw.iloc[null[0]:]
+                    .reset_index(drop = True)
+                    .drop(index = 0)
+                    )
+
             else:
-                self.idx_list_values = self.raw[self.raw[self.Y] > cut_off].index
                 self.data = self.raw
+            self.idx_list_values = self.raw[self.raw[self.Y] > cut_off].index
             
         
         elif electrode =='c':
             if self.raw.iloc[0, 1] < cut_off:
                 null = self.raw[self.raw[self.Y] > cut_off].index
-                self.data = self.raw.iloc[null[0]:]
-                self.data = self.data.reset_index(drop = True)
-                self.data = self.data.drop(index = 0)
-                self.idx_list_values = self.data[self.data[self.Y] < cut_off].index
+                self.data = (
+                    self.raw.iloc[null[0]:]
+                    .reset_index(drop = True)
+                    .drop(index = 0)
+                    )
+                  
             else:
-                
-                self.idx_list_values = self.raw[self.raw[self.Y] < cut_off].index
                 self.data = self.raw
-
-        
+            self.idx_list_values = self.data[self.data[self.Y] < cut_off].index
+            
+  
         self.idxx = [0] + list(self.idx_list_values)
         df_list = []
         
@@ -113,9 +115,7 @@ class LIB_tot(Dataloads):
 class LIB_csv(Dataloads):  
     def __init__(self, path, file):       
         Dataloads.__init__(self, path, file)
-        # (self.name, self.ext) = self.file.split('.')
         self.df = pd.read_csv(self.file_path, index_col = 0, encoding = "cp949") 
-        # self.df.set_index('인덱스', inplace = True)
         self.X, self.Y  = self.df.columns[0], self.df.columns[1]
         self.null = self.df[self.df[self.X] == 0].index
         self.df = self.df.drop(self.null)
@@ -149,10 +149,8 @@ class LIB_csv(Dataloads):
         return self.df.loc[self.min]
     
     def GCD_plot(self, color):
-        
         plt.plot(self.negative[self.X], self.negative[self.Y], color, label = LIB_csv.__str__(self))
         plt.plot(self.positive[self.X], self.positive[self.Y], color )
-
 
 
 def get_plot(path, exp, k=None):
@@ -165,16 +163,12 @@ def get_plot(path, exp, k=None):
         exp[num].df_indexing()
         exp[num].GCD_plot(color_list[ix%nc])
     
-    # for a, b in zip(numbering, color_list):
-    #     exp[a].df_indexing()
-    #     exp[a].GCD_plot(b)   
     leg = plt.legend(fontsize = 6)
     for line, text in zip(leg.get_lines(), leg.get_texts()):
         text.set_color(line.get_color())
     plt.xlabel('Specific Capacity (Ah/g)')
     plt.ylabel(r'Potential (V vs. Li/Li$^+$)')  
-    
-    plt.savefig(path + '_GCD.png', dpi=600)
+    plt.savefig(path + '_GCD.png', dpi=300)
 
 def get_result(path, exp, k=None):
     n = len(exp)
@@ -201,7 +195,7 @@ def get_export(path, exp_obj, k=None):
             (
                 pd.concat([exp_obj[num].negative.reset_index(drop = True)
                            ,exp_obj[num].positive.reset_index(drop = True)]
-                           , axis = 1, ignore_index = True)
+                           ,axis = 1, ignore_index = True)
                            .to_excel(writer, index = False
                                      ,header = ["negative (Ah/g)","V1", "positive (Ah/g)", "V2"])
                     
@@ -215,8 +209,7 @@ def get_export(path, exp_obj, k=None):
             
             (
                 pd.concat([gcd.negative.reset_index(drop = True)
-                           , gcd.positive.reset_index(drop = True)]
-                          ,axis = 1)
+                           , gcd.positive.reset_index(drop = True)], axis = 1)
                 .to_excel(writer, startcol = 4*ix, index = False
                           , header = [f"negative_{ix}", f"V_{ix}", f"positive_{ix}", gcd.name])
                                       

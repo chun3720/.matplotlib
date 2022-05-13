@@ -12,29 +12,24 @@ from pathlib import Path
 
 def path_gen(path: str, file_ext: str = None) -> str:
     print('\nCurrent path: ')
-    print('-------------------------------------------------------------------------------------------')
+    print('--------------------------------------------------------------------------------------')
     print(path)
-    print('-------------------------------------------------------------------------------------------')
+    print('--------------------------------------------------------------------------------------')
     path_folder = os.listdir(path)
     
-    
-    # path_dict = {}
-    if file_ext == None:
-        path_dict = {i:val for i, val in enumerate(path_folder)}
-        
-        for key, val in path_dict.items():
-            print(f'{key} : {val}')
-            
-        return path_dict
-    
-    elif file_ext != None:
+    if file_ext is not None:
         path_folder = [_ for _ in path_folder if _.endswith(file_ext)]
-        path_dict = {i:val for i, val in enumerate(path_folder)}
-        for key, val in path_dict.items():
-            print(f'{key} : {val}')
-            
-        print('==========================================')       
-        return path_dict
+        
+    path_dict = dict(enumerate(path_folder))
+    
+    for key, val in path_dict.items():
+        print(f'{key} : {val}')
+        
+    print('==========================================')       
+    
+    return path_dict
+    
+
 
 def get_sort(listitem: List, KeyFunction: object) -> List[str]:
     sorted_list = sorted(listitem, key = KeyFunction)
@@ -51,8 +46,8 @@ def raw_check(path: str, file_ext: str) -> List:
             file_only_list = [os.path.basename(_) for _ in sorted_list]
             # test_list = [os.path.split(_)[1] for _ in sorted_list]
             return file_only_list
-        else:
-            return check_true
+        # else:
+        return check_true
 
 def fileloads(year_path: str, file_ext: str) -> List:  
     year_dict = path_gen(year_path)
@@ -69,8 +64,8 @@ def fileloads(year_path: str, file_ext: str) -> List:
             path_gen(path_true, file_ext)
             EXP_title = year_dict[int(folder_select)].replace("_", "-")
             return (list_true, path_true, year_dict[int(folder_select)], EXP_title)  
-        else:
-            return fileloads(date_path, file_ext)
+        # else:
+        return fileloads(date_path, file_ext)
         
     elif folder_select == ".":
         parent_path = Path(year_path).parent

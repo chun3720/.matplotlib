@@ -17,12 +17,12 @@ year_path = r"D:\Researcher\JYCheon\DATA\Electrochemistry\Coin cell\2022"
 # year_path = "C:\\Users\\jycheon\\Documents\\Dummy"
 
 
-class LIB_tot(Dataloads):  
+class LIB_tot(Dataloads):
     # df_list = []
-    def __init__(self, path, file):       
+    def __init__(self, path, file):
         Dataloads.__init__(self, path, file)
         # (self.name, self.ext) = self.file.split('.')
-        self.data = pd.read_excel(self.file_path, sheet_name = '데이터_1_1', index_col = 0) 
+        self.data = pd.read_excel(self.file_path, sheet_name = '데이터_1_1', index_col = 0)
         self.data.columns = ["cycle number", "Capacity"]
         self.unit = "(Ah/g)"
         # self.X, self.Y = self.data.columns[0]
@@ -43,9 +43,7 @@ class LIB_tot(Dataloads):
         plt.xticks(np.arange(0, max(x)+1, k))
         # plt.yticks(np.arange(0, max(y)*1.1))
         plt.ylabel("Specific Capacity ($Ah/g$)")
-        
         # plt.show()
-        
         
 def get_export(exp, path, check = 'n', convertor = 'n'):
     output_path = f'{path}output\\'
@@ -57,7 +55,6 @@ def get_export(exp, path, check = 'n', convertor = 'n'):
     if check == 'y':
         
         with pd.ExcelWriter(f'{output_path}Cycle_tot.xlsx') as writer:
-
             for i, cy in enumerate(exp):
                 (
                     cy.data[cols].assign(Capacity = cy.data[cols][cy.y]*1000)
@@ -81,13 +78,11 @@ def get_export(exp, path, check = 'n', convertor = 'n'):
                     
                     quest = input(f"type conversion factor for '{cy.file}' (make sure it means denominator): ")
                     basis = float(quest)
-
                     (
                      cy.data[cols].assign(Capacity = cy.data[cols][cy.y]*1000/basis)   
                      .to_excel(writer, startcol = 2*i, index = False, header = ["mAh/g(re)", cy.name])                    
                         )
-                    plt.plot(cy.X, cy.Y*1000/basis, 'o', label = cy.name)
-  
+                    plt.plot(cy.X, cy.Y*1000/basis, 'o', label = cy.name)  
                 leg = plt.legend(fontsize = 'xx-small')
                 for line, text in zip(leg.get_lines(), leg.get_texts()):
                     text.set_color(line.get_color())
@@ -129,17 +124,6 @@ def get_export(exp, path, check = 'n', convertor = 'n'):
                 plt.ylabel("Specific Capacity ($Ah/g_{re}$)")
                 plt.show()
                     
-    return output_path
-    
-
-def cycle_sns(exp_obj):
-    
-    plt.figure(figsize = (3, 2.5))
-    for exp in exp_obj:
-        x = exp.data.columns[0]
-        y = exp.data.columns[1]
-        sns.scatterplot(x = x, y = y, data = exp.data)
-        
 
 def cycle_plt(exp):
     
@@ -167,7 +151,7 @@ def main(date_path = year_path):
     check = input("convert to mAh/g? yes (y) or no(n) :")
     convertor  = input("want to recalculate ? yes (y) or no(n) :")
     
-    out_path = get_export(exp_data, path, check, convertor)
+    get_export(exp_data, path, check, convertor)
     
 if __name__ == "__main__":
     main()
