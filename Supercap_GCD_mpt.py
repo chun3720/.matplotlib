@@ -31,8 +31,9 @@ class EC_measurement(Dataloads):
         self.df = pd.read_csv(self.file_path, skiprows = self.header-1, sep = '\t', header = 0)
         
         check = self.df["cycle number"].value_counts().to_dict()
+        _check = sorted(list(check.keys()))
         if len(check) != 1:
-            key = list(check.keys())[-2]
+            key = _check[-2]
             filt = self.df[self.df["cycle number"] == key]
             self.df = filt.reset_index(drop = True)
         
@@ -43,7 +44,7 @@ class EC_measurement(Dataloads):
             self.name = self.name[:-2]
 
         if self.method == 'GCD':            
-            self.df.drop(columns = ['mode', 'ox/red', 'error', 'Ns changes','counter inc.', 'P/W', 'Unnamed: 26' ], inplace = True)
+            self.df.drop(columns = ['mode', 'ox/red', 'error', 'Ns changes','counter inc.', 'P/W'], inplace = True)
             self.appl_current = self.df["control/mA"].loc[0]
             self.appl_unit = self.df.columns[2].split("/")[1]
             self.cap_result = 0
@@ -63,7 +64,7 @@ class EC_measurement(Dataloads):
             self.name = self.name.replace("_02_CstC", "")
             
         elif self.method == 'CV':
-            self.df.drop(columns = ['mode', 'ox/red', 'error', 'counter inc.', 'P/W', 'Unnamed: 12' ], inplace = True)
+            self.df.drop(columns = ['mode', 'ox/red', 'error', 'counter inc.', 'P/W'], inplace = True)
             t1, v1 = self.df[["time/s", "control/V"]].loc[1]
             t2, v2 = self.df[["time/s", "control/V"]].loc[2]
             
