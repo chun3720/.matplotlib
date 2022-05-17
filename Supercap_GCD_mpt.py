@@ -61,7 +61,14 @@ class EC_measurement(Dataloads):
             self.max = self.df["<Ewe>/V"].idxmax()
             self.df_charge = self.df.loc[:self.max]
             self.df_discharge = self.df.loc[self.max+1:]
-            self.name = self.name.replace("_02_CstC", "")
+            self.name = (
+                
+                self.name.replace("_02_CstC", "")
+                .replace("_03_CstC", "")
+                .replace("_06_CstC", "")
+                .replace("_04_CstC", "")
+                .replace("_08_CstC", "")
+                         )
             
         elif self.method == 'CV':
             self.df.drop(columns = ['mode', 'ox/red', 'error', 'counter inc.', 'P/W'], inplace = True)
@@ -69,38 +76,47 @@ class EC_measurement(Dataloads):
             t2, v2 = self.df[["time/s", "control/V"]].loc[2]
             
             self.scan_rate =  round((v2-v1) / (t2-t1) , 2)
-            self.name = self.name.replace("_01_CV", "")
+            self.name = (
+                self.name.replace("_01_CV", "")
+                .replace("_02_CV", "")
+                .replace("_05_CV", "")
+                .replace("_06_CV", "")
+                
+                )
             
-
+            
+            
+            
+    def __str__(self):
+        return self.name
+    
+    def __len__(self):
+        
+        return len(self.name)
+    
     def get_calculation(self):
         
         if self.method == "GCD":
             
-            try:
-        
-                k = self.df_charge.shape[0]
-                T1, V1 = self.df_charge[["time/s", "<Ewe>/V"]].loc[k-1]
-    
-                if V1 > 2.4:
-                    idx_list = self.df_discharge[self.df_discharge["<Ewe>/V"] < 1.5].index
-                    T2, V2 = self.df_discharge[["time/s", "<Ewe>/V"]].loc[idx_list[0]]
-                else:
-                ###
-                    # for 1V calculation
-                    n = self.df_discharge.shape[0]
-                    T2, V2 = self.df_discharge.loc[n-1]
+                    
+            k = self.df_charge.shape[0]
+            T1, V1 = self.df_charge[["time/s", "<Ewe>/V"]].loc[k-1]
 
-                self.max_point = np.array([T1, T2])
-                self.half_point = np.array([V1, V2])
-                self.slope = (T2- T1) /  (V1-V2)
-                self.cap_result = self.Is * self.slope
+            if V1 > 2.4:
+                idx_list = self.df_discharge[self.df_discharge["<Ewe>/V"] < 1.5].index
+                T2, V2 = self.df_discharge[["time/s", "<Ewe>/V"]].loc[idx_list[0]]
+            else:
+            ###
+                # for 1V calculation
+                n = self.df.shape[0]
+                T2, V2 = self.df[["time/s", "<Ewe>/V"]].loc[n-1]
+
+            self.max_point = np.array([T1, T2])
+            self.half_point = np.array([V1, V2])
+            self.slope = (T2- T1) /  (V1-V2)
+            self.cap_result = self.Is * self.slope
                 
-                return True
-            
-            except:
-                return None
 
-        
         else:
             return None
         
@@ -190,6 +206,9 @@ def get_export(exp, path):
         
         elif item.method == "CV":
             CVs.append(item)
+    
+    # print(GCDs)
+    
     
     GCD_list = []
     cap_list = []
@@ -313,7 +332,7 @@ def get_multiplot(exp, path):
         plt.xlabel("Voltage (V)")
         plt.ylabel("Current (mA)")
         plt.show()
-        
+    
 def main(date_path = year_path):
     raw_list, path, _, _ = fileloads(date_path, '.mpt')
     exp_obj = build_data(path, raw_list, EC_measurement)
@@ -330,3 +349,16 @@ def main(date_path = year_path):
 if __name__ == "__main__":
     main()
 
+
+# # for test
+# raw_list, path, _, _ = fileloads(year_path, '.mpt')
+# exp_obj = build_data(path, raw_list, EC_measurement)
+
+
+# # for i in range(len(exp_obj)):
+# for exp in exp_obj:
+#     exp.get_calculation()
+#     exp.get_plot(path)
+    
+# get_multiplot(exp_obj, path)
+# get_export(exp_obj, path)
