@@ -157,7 +157,7 @@ class EC_measurement(Dataloads):
             plt.plot(self.df_discharge["Capacity/mA.h"], self.df_discharge["<Ewe>/V"], 'b-')
             plt.xlabel("Capacity (mAh)")
             plt.ylabel('Voltage (V)')
-            plt.savefig(f'{output_path}{self.name}.png')    
+            plt.savefig(f'{output_path}{self.name}.png', dpi = 300)    
         
         elif self.method  == "CV":
             pass
@@ -212,8 +212,8 @@ def get_export(exp, path):
         for i, gcd in enumerate(GCDs):
             cols = ["time/s", "<Ewe>/V"]
             (
-             gcd.df[cols].rename(columns = {"time/s" : f"time_{i}", "<Ewe>/V" : gcd.name})
-             .to_excel(writer, startcol = 2*i, index = False)
+             gcd.df[cols]
+             .to_excel(writer, startcol = 2*i, index = False, header = [f"time_{i}", gcd.name])
              )
             progress_bar(i+1, n)
         df1.to_excel(writer, sheet_name = 'Summary')
@@ -230,8 +230,8 @@ def get_export(exp, path):
                 pd.concat([gcd.df_charge[cols].reset_index(drop = True)
                           ,gcd.df_discharge[cols].reset_index(drop = True) ]
                           ,axis = 1, ignore_index = True)
-                .to_excel(writer, startcol = 4*i, index = False, 
-                          header = [ f'Charge_{i}', f'V_{i}', f'Discharge_{i}',gcd.name ])
+                .to_excel(writer, startcol = 4*i, index = False
+                          ,header = [ f'Charge_{i}', f'V_{i}', f'Discharge_{i}',gcd.name ])
                 )
             
             progress_bar(i+1, n)
@@ -247,10 +247,11 @@ def get_export(exp, path):
             for i, cv in enumerate(CVs):
                 cols = ["Ewe/V", "<I>/mA"]
                 (
-                 cv.df[cols].rename(columns = {"Ewe/V": f'V_{i}', "<I>/mA": cv.name.replace("_CV", "")})
-                 .to_excel(writer, startcol = 2*i, index = False)
+                 cv.df[cols]
+                 .to_excel(writer, startcol = 2*i, index = False, header = [f'V_{i}', cv.name])
                  )
                 progress_bar(i+1, n)
+            
 
     
     
