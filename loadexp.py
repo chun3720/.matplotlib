@@ -102,12 +102,12 @@ def build_data(path: str, file: str, builder: object) -> object:
     data = []
        
     for item in file:
-        # data.append(builder(path, item))
-        try:
-            data.append(builder(path, item))
-        except:
-            print(f'fail to load {item} file')
-            pass
+        data.append(builder(path, item))
+        # try:
+        #     data.append(builder(path, item))
+        # except:
+        #     print(f'fail to load {item} file')
+        #     pass
     return data
 
 # from datetime import datetime
