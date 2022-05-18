@@ -97,7 +97,7 @@ class Dataloads:
         # if "CstC" in self.name:
         #     self.name = self.name.replace("CstC_", "")
         
-def build_data(path: str, file: str, builder: object) -> object:
+def build_data(path: str, file: List[str], builder: object) -> List[object]:
     "Build class of each file and return list of builded classes"
     data = []
        
