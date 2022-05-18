@@ -94,8 +94,6 @@ class Dataloads:
     def __post_init__(self):
         self.file_path = os.path.join(self.path, self.file)
         self.name, self.ext = os.path.splitext(self.file)
-        # if "CstC" in self.name:
-        #     self.name = self.name.replace("CstC_", "")
         
 def build_data(path: str, file: List[str], builder: object) -> List[object]:
     "Build class of each file and return list of builded classes"
