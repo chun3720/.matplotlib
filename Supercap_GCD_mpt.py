@@ -61,14 +61,10 @@ class EC_measurement(Dataloads):
             self.max = self.df["<Ewe>/V"].idxmax()
             self.df_charge = self.df.loc[:self.max]
             self.df_discharge = self.df.loc[self.max+1:]
-            self.name = (
+            
+            if self.name.endswith("_CstC"):
+                self.name = self.name[:-8]
                 
-                self.name.replace("_02_CstC", "")
-                .replace("_03_CstC", "")
-                .replace("_06_CstC", "")
-                .replace("_04_CstC", "")
-                .replace("_08_CstC", "")
-                         )
             
         elif self.method == 'CV':
             self.df.drop(columns = ['mode', 'ox/red', 'error', 'counter inc.', 'P/W'], inplace = True)
@@ -76,16 +72,8 @@ class EC_measurement(Dataloads):
             t2, v2 = self.df[["time/s", "control/V"]].loc[2]
             
             self.scan_rate =  round((v2-v1) / (t2-t1) , 2)
-            self.name = (
-                self.name.replace("_01_CV", "")
-                .replace("_02_CV", "")
-                .replace("_05_CV", "")
-                .replace("_06_CV", "")
-                
-                )
-            
-            
-            
+            if self.name.endswith("_CV"):
+                self.name = self.name[:-6]
             
     def __str__(self):
         return self.name
