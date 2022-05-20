@@ -34,7 +34,7 @@ for key, value in code_dict.items():
 
 selector = input("which file want to run: ")
 chosen = int(selector)
-to_import = code_dict[chosen][:-3]
+to_import, ext = os.path.splitext(code_dict[chosen])
 
 package_to_load = f'ForMatplotlib.{to_import}'
 module = importlib.import_module(package_to_load)

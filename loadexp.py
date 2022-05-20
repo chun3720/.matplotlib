@@ -18,6 +18,7 @@ def path_gen(path: str, file_ext: str = None) -> str:
     path_folder = os.listdir(path)
     
     if file_ext is not None:
+
         path_folder = [_ for _ in path_folder if _.endswith(file_ext)]
         
     path_dict = dict(enumerate(path_folder))
@@ -39,12 +40,9 @@ def raw_check(path: str, file_ext: str) -> List:
         check_list = os.listdir(path)
         check_true = [_ for _ in check_list if _.endswith(file_ext)]
         if len(check_true) != 0:
-            # with_path = [path + '\\' + _ for _ in check_true]    
             with_path = [os.path.join(path,_) for _ in check_true]    
             sorted_list = get_sort(with_path, os.path.getmtime)  
-            # result_list = [_.split('\\')[-1] for _ in sorted_list]
             file_only_list = [os.path.basename(_) for _ in sorted_list]
-            # test_list = [os.path.split(_)[1] for _ in sorted_list]
             return file_only_list
         # else:
         return check_true
