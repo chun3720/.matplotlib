@@ -122,8 +122,7 @@ class EC_measurement(Dataloads):
             self.cap_result *= 1000
             self.cap_unit = 'uF'
             
-        res = f'{round(self.cap_result, 2)} {self.cap_unit}'
-        return res
+        return  f'{round(self.cap_result, 2)} {self.cap_unit}'
                 
         
     def get_plot(self, path):
