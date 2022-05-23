@@ -137,7 +137,7 @@ class EC_measurement(Dataloads):
             # Is = str(self.appl_current) + ' ' + self.appl_unit
             Is = self.get_condition()
             # label = self.name + ', ' + Is
-            label = f'{self.name.replace("_CstC", "")}, {Is}'
+            label = f'{self.name}, {Is}'
             plt.subplot(211)
             plt.plot(self.df["time/s"], self.df["<Ewe>/V"], '--', color = 'gray', label = label)
     
@@ -161,6 +161,9 @@ class EC_measurement(Dataloads):
             plt.plot(self.df_discharge["Capacity/mA.h"], self.df_discharge["<Ewe>/V"], 'b-')
             plt.xlabel("Capacity (mAh)")
             plt.ylabel('Voltage (V)')
+
+            plt.subplots_adjust(hspace = 0.5)
+            
             plt.savefig(f'{output_path}{self.name}.png', dpi = 300)    
         
         elif self.method  == "CV":
