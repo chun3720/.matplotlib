@@ -21,7 +21,7 @@ parent_path = Path(path).parent
 if str(parent_path) not in sys.path:
     sys.path.append(str(parent_path))
 
-import ForMatplotlib
+# import ForMatplotlib
 
 code_list = [_ for _ in os.listdir(path) if _.endswith(".py")]
 to_ignore = ["__init__.py", "loadexp.py", "Player.py"]
