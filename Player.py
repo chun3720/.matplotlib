@@ -9,11 +9,13 @@ import os
 import importlib
 from pathlib import Path
 import sys
+import PySimpleGUI as sg
 
 """
 modify the below 'data_path' for your data folder path
 """
-data_path = r"D:\Researcher\JYCheon\DATA"
+# data_path = r"D:\Researcher\JYCheon\DATA"
+
 
 path = os.getcwd()
 parent_path = Path(path).parent
@@ -43,4 +45,15 @@ print("\n\n")
 print(f"Current package: {package_to_load}\n")
 
 module.main()
-# module.main(data_path)
+
+def GUI_load(module):
+
+    dir_path = sg.popup_get_folder("Select Folder")
+    if not dir_path:
+        sg.popup("Cancel", "No folder selected")
+        raise SystemExit("Cancelling: no folder selected")
+        
+    else:
+        sg.popup(f"The folder you chose was {dir_path}")
+        
+    module.main(dir_path)
