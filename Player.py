@@ -9,12 +9,12 @@ import os
 import importlib
 from pathlib import Path
 import sys
-import PySimpleGUI as sg
+
 
 """
 modify the below 'data_path' for your data folder path
 """
-# data_path = r"D:\Researcher\JYCheon\DATA"
+data_path = r"D:\Researcher\JYCheon\DATA"
 
 
 path = os.getcwd()
@@ -26,7 +26,7 @@ if str(parent_path) not in sys.path:
 # import ForMatplotlib
 
 code_list = [_ for _ in os.listdir(path) if _.endswith(".py")]
-to_ignore = ["__init__.py", "loadexp.py", "Player.py"]
+to_ignore = ["__init__.py", "loadexp.py", "Player.py", "Battery_GCDplot_old.py"]
 codes = [_ for _ in code_list if _ not in to_ignore]    
 # code_dict = {i:code for i, code in enumerate(codes)}
 code_dict = dict(enumerate(codes))
@@ -46,7 +46,10 @@ print(f"Current package: {package_to_load}\n")
 
 module.main()
 
+# module.main(data_path)
+
 def GUI_load(module):
+    import PySimpleGUI as sg
 
     dir_path = sg.popup_get_folder("Select Folder")
     if not dir_path:
@@ -57,3 +60,6 @@ def GUI_load(module):
         sg.popup(f"The folder you chose was {dir_path}")
         
     module.main(dir_path)
+    
+
+# GUI_load(module)

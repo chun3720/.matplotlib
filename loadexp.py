@@ -15,11 +15,16 @@ def path_gen(path: str, file_ext: str = None) -> str:
     print('--------------------------------------------------------------------------------------')
     print(path)
     print('--------------------------------------------------------------------------------------')
-    path_folder = os.listdir(path)
+    
+    
+    # path_folder = os.listdir(path)
     
     if file_ext is not None:
 
-        path_folder = [_ for _ in path_folder if _.endswith(file_ext)]
+        path_folder = [_ for _ in os.listdir(path) if _.endswith(file_ext)]
+        
+    else:
+        path_folder = os.listdir(path)
         
     path_dict = dict(enumerate(path_folder))
     
@@ -37,8 +42,8 @@ def get_sort(listitem: List, KeyFunction: object) -> List[str]:
     return sorted_list
 
 def raw_check(path: str, file_ext: str) -> List:
-        check_list = os.listdir(path)
-        check_true = [_ for _ in check_list if _.endswith(file_ext)]
+        # check_list = os.listdir(path)
+        check_true = [_ for _ in os.listdir(path) if _.endswith(file_ext)]
         if len(check_true) != 0:
             with_path = [os.path.join(path,_) for _ in check_true]    
             sorted_list = get_sort(with_path, os.path.getmtime)  
@@ -51,7 +56,15 @@ def fileloads(year_path: str, file_ext: str) -> List:
     year_dict = path_gen(year_path)
     folder_select = input("Select folder to analyze, (move to parent path: type(.):  ")
     
-    if folder_select != ".":
+    if not folder_select:
+        raise SystemExit("Cancelling: no folder selected")
+        
+    elif folder_select == ".":
+        parent_path = Path(year_path).parent
+        
+        return fileloads(parent_path, file_ext)
+    
+    else:
         
         # date_path = year_path + '\\' + year_dict[int(folder_select)] + '\\'
         date_path = os.path.join(year_path, year_dict[int(folder_select)]) + '\\'
@@ -65,10 +78,7 @@ def fileloads(year_path: str, file_ext: str) -> List:
         # else:
         return fileloads(date_path, file_ext)
         
-    elif folder_select == ".":
-        parent_path = Path(year_path).parent
-        
-        return fileloads(parent_path, file_ext)
+    
 
 def progress_bar(progress: int, total: int) -> None:
     percent = 100 * (progress / float(total))
