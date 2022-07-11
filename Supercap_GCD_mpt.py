@@ -10,12 +10,30 @@ import pandas as pd
 import os
 from matplotlib import pyplot as plt
 import numpy as np
+import seaborn as sns
 # import shutil
 # from loadexp_0318 import *
 plt.style.use(['science', 'no-latex'])
 
 year_path  = "D:\\Researcher\\JYCheon\\DATA\\Electrochemistry\\2022\\Raw"
 
+def add_median_labels(ax, fmt='.1f'):
+    lines = ax.get_lines()
+    boxes = [c for c in ax.get_children() if type(c).__name__ == 'PathPatch']
+    lines_per_box = int(len(lines) / len(boxes))
+    for median in lines[4:len(lines):lines_per_box]:
+        x, y = (data.mean() for data in median.get_data())
+        # choose value depending on horizontal or vertical plot orientation
+        value = x if (median.get_xdata()[1] - median.get_xdata()[0]) == 0 else y
+        text = ax.text(x, y, f'{value:{fmt}}', ha='center', va='center',
+                       fontweight='bold', color='black')
+        # create median-colored border around white text for contrast
+        # text.set_path_effects([
+        #     path_effects.Stroke(linewidth=3, foreground=median.get_color()),
+        #     path_effects.Normal(),
+        # ])
+        
+        
 class EC_measurement(Dataloads):
     def __init__(self, path, file):
         Dataloads.__init__(self, path, file)
@@ -83,26 +101,41 @@ class EC_measurement(Dataloads):
         return len(self.name)
     
     def get_calculation(self):
+        """
+        Calculate capacitance for GCD measurement without considering IR drop.
+        Applied current is already provided by object initialization.
+        
+        Args:
+            None
+            
+        Returns: A real number representing capacitance.
+        """
         
         if self.method == "GCD":
             
+            try:
                     
-            k = self.df_charge.shape[0]
-            T1, V1 = self.df_charge[["time/s", "<Ewe>/V"]].loc[k-1]
+                k = self.df_charge.shape[0]
+                T1, V1 = self.df_charge[["time/s", "<Ewe>/V"]].loc[k-1]
+    
+                if V1 > 2.4:
+                    idx_list = self.df_discharge[self.df_discharge["<Ewe>/V"] < 1.5].index
+                    T2, V2 = self.df_discharge[["time/s", "<Ewe>/V"]].loc[idx_list[0]]
+                else:
+                ###
+                    # for 1V calculation
+                    n = self.df.shape[0]
+                    T2, V2 = self.df[["time/s", "<Ewe>/V"]].loc[n-1]
+       
+                
+                self.max_point = np.array([T1, T2])
+                self.half_point = np.array([V1, V2])
+                self.slope = (T2- T1) /  (V1-V2)
+                self.cap_result = self.Is * self.slope
+            except:
+                pass
 
-            if V1 > 2.4:
-                idx_list = self.df_discharge[self.df_discharge["<Ewe>/V"] < 1.5].index
-                T2, V2 = self.df_discharge[["time/s", "<Ewe>/V"]].loc[idx_list[0]]
-            else:
-            ###
-                # for 1V calculation
-                n = self.df.shape[0]
-                T2, V2 = self.df[["time/s", "<Ewe>/V"]].loc[n-1]
 
-            self.max_point = np.array([T1, T2])
-            self.half_point = np.array([V1, V2])
-            self.slope = (T2- T1) /  (V1-V2)
-            self.cap_result = self.Is * self.slope
                 
 
         else:
@@ -122,8 +155,7 @@ class EC_measurement(Dataloads):
             self.cap_result *= 1000
             self.cap_unit = 'uF'
             
-        res = f'{round(self.cap_result, 2)} {self.cap_unit}'
-        return res
+        return  f'{round(self.cap_result, 2)} {self.cap_unit}'
                 
         
     def get_plot(self, path):
@@ -137,7 +169,7 @@ class EC_measurement(Dataloads):
             # Is = str(self.appl_current) + ' ' + self.appl_unit
             Is = self.get_condition()
             # label = self.name + ', ' + Is
-            label = f'{self.name.replace("_CstC", "")}, {Is}'
+            label = f'{self.name}, {Is}'
             plt.subplot(211)
             plt.plot(self.df["time/s"], self.df["<Ewe>/V"], '--', color = 'gray', label = label)
     
@@ -154,13 +186,16 @@ class EC_measurement(Dataloads):
             plt.xlabel('Time (s)')
             # plt.xticks(fontsize = 11)
             plt.ylabel('Voltage (V)')
-            # plt.yticks(fontsize = 11)
+            # plt.yticks(fontsize = 11)10
             
             plt.subplot(212)
             plt.plot(self.df_charge["Capacity/mA.h"], self.df_charge["<Ewe>/V"], 'b-')
             plt.plot(self.df_discharge["Capacity/mA.h"], self.df_discharge["<Ewe>/V"], 'b-')
             plt.xlabel("Capacity (mAh)")
             plt.ylabel('Voltage (V)')
+
+            plt.subplots_adjust(hspace = 0.5)
+            
             plt.savefig(f'{output_path}{self.name}.png', dpi = 300)    
         
         elif self.method  == "CV":
@@ -177,6 +212,46 @@ class EC_measurement(Dataloads):
             # plt.ylabel("Current (mA)")
         
         plt.show()
+        
+    def get_drop(self):
+        
+        def get_slope(time, voltage, sep):
+            temp_X = np.array(time)
+            temp_Y = np.array(voltage)
+            dx = []
+            dy = []
+            for i in range(0, len(temp_X), sep):
+                dx.append(temp_X[i])
+                dy.append(temp_Y[i])
+            
+            dydx = np.diff(dy)/np.diff(dx)
+            
+            return dydx
+        
+        
+        if self.method == "GCD":
+            X = self.df_discharge["time/s"]
+            Y = self.df_discharge["<Ewe>/V"]
+
+            try:
+                dydx = get_slope(X, Y, 5)
+                # plt.hist(medians)
+                
+                self.caps_mF = -self.Is*1000/dydx
+                ax = sns.boxplot(y = self.caps_mF, color = 'white')
+                sns.stripplot(y = self.caps_mF, color = 'red', alpha = 0.3, edgecolor = 'red', linewidth = 1)
+                add_median_labels(ax)
+                plt.ylabel("Capacitance (mF)")
+                plt.title(f"{self.name}", fontsize = 10)
+                plt.show()
+                # sns.displot(self.caps_mf, kde=  True, bins = 5 )
+                # plt.show()
+                
+            except:
+                pass
+
+                
+            
         
         
 def get_export(exp, path):
@@ -320,33 +395,50 @@ def get_multiplot(exp, path):
         plt.xlabel("Voltage (V)")
         plt.ylabel("Current (mA)")
         plt.show()
+        
+        
+def get_multibox(exp_obj, path):
+    Box = {}
+    for exp in exp_obj:
+        df = pd.DataFrame(data = exp.caps_mF)
+        Box[f'{exp.name}'] = exp.caps_mF
+        
+    sns.boxplot(data = Box)
+    plt.show()
+    # print(Box)
+        
+    
+    
+    
+        
+        
     
 def main(date_path = year_path):
     raw_list, path, _, _ = fileloads(date_path, '.mpt')
     exp_obj = build_data(path, raw_list, EC_measurement)
-    
-    
-    # for i in range(len(exp_obj)):
     for exp in exp_obj:
         exp.get_calculation()
         exp.get_plot(path)
+        exp.get_drop()
+        
+        
         
     get_multiplot(exp_obj, path)
     get_export(exp_obj, path)
-
+    # get_multibox(exp_obj, path)
+    
 if __name__ == "__main__":
     main()
 
 
-# # for test
+# for test
 # raw_list, path, _, _ = fileloads(year_path, '.mpt')
 # exp_obj = build_data(path, raw_list, EC_measurement)
 
-
-# # for i in range(len(exp_obj)):
 # for exp in exp_obj:
 #     exp.get_calculation()
 #     exp.get_plot(path)
+#     exp.get_drop()
     
 # get_multiplot(exp_obj, path)
 # get_export(exp_obj, path)
