@@ -11,7 +11,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 plt.style.use(['science', 'no-latex'])
-year_path = r"D:\Researcher\JYCheon\DATA\Electrochemistry\2021\Raw"
+year_path = r"D:\Researcher\JYCheon\DATA\Electrochemistry\2022\Raw"
 
 
 class DLC_builder(Dataloads):
