@@ -138,25 +138,27 @@ def get_load_plot(exp_obj, path):
     
     
     # names = ["EtOH", "DP/EtOH/1:50", "Water", "Acetone", "DMSO"]
+    
+    angle = 30
    
     ax1 = sns.barplot(x = df.index, y = "Load (N)", data = df)
-    ax1.set_xticklabels(names, fontsize = 8, rotation = 30)
+    ax1.set_xticklabels(names, fontsize = 8, rotation = angle)
     plt.savefig(f"{output_path}Load.png", dpi = 300)
     # plt.title("220727")
     plt.show()
 
     ax2 = sns.barplot(x = df.index, y = "Specific Strength (N/Tex)", data = df)
-    ax2.set_xticklabels(names, fontsize = 8, rotation = 30)
+    ax2.set_xticklabels(names, fontsize = 8, rotation = angle)
     plt.savefig(f"{output_path}Strength.png", dpi = 300)
     plt.show()
     
     ax3 = sns.barplot(x = df.index, y = "Stiffness (N/Tex)", data = df)
-    ax3.set_xticklabels(names, fontsize = 8, rotation = 30)
+    ax3.set_xticklabels(names, fontsize = 8, rotation = angle)
     plt.savefig(f"{output_path}Stiffness.png", dpi = 300)
     plt.show()
     
     ax4 = sns.barplot(x = df.index, y = "Strain (%)", data = df)
-    ax4.set_xticklabels(names, fontsize = 8, rotation = 30)
+    ax4.set_xticklabels(names, fontsize = 8, rotation = angle)
     plt.savefig(f"{output_path}Strain.png", dpi = 300)
     plt.show()
     
@@ -168,7 +170,7 @@ def get_load_plot(exp_obj, path):
     
     ax5 = df.plot(kind = "bar",  y = "Stiffness (N/Tex)", secondary_y = True, ax = ax, color = 'r', align = 'edge')
     plt.ylabel("Stiffness (N/Tex)")
-    ax.set_xticklabels(names, fontsize = 8, rotation = 30)
+    ax.set_xticklabels(names, fontsize = 8, rotation = angle)
     k = df["Stiffness (N/Tex)"]
     plt.ylim(0, max(k)*1.5)
     plt.savefig(f"{output_path}doubleY.png", dpi = 300)
