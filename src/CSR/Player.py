@@ -38,7 +38,8 @@ selector = input("which file want to run: ")
 chosen = int(selector)
 to_import, ext = os.path.splitext(code_dict[chosen])
 
-package_to_load = f'ForMatplotlib.{to_import}'
+# package_to_load = f'ForMatplotlib.{to_import}'
+package_to_load = f'CSR.{to_import}'
 module = importlib.import_module(package_to_load)
 
 print("\n\n")
