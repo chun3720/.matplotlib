@@ -5,7 +5,7 @@ Created on Tue Jul 26 10:07:06 2022
 @author: user
 """
 
-from loadexp import *
+from CSR.loadexp import *
 
 import pandas as pd
 import os
@@ -99,13 +99,16 @@ def get_graph(exp_obj, path):
     
     
  
+def main(date_path = year_path):
 
-
-raw_list, path, _, _ = fileloads(year_path, '.csv')
-exp = build_data(path, raw_list, Strength)
-
-get_export(exp, path)
-
-get_graph(exp, path)
+    raw_list, path, _, _ = fileloads(date_path, '.csv')
+    exp = build_data(path, raw_list, Strength)
+    
+    get_export(exp, path)
+    
+    get_graph(exp, path)
+    
+if __name__ == "__main__":
+    main()
 
 

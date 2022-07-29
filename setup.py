@@ -21,8 +21,8 @@ setup(
       version = "0.1.0",
       author = "jae yeong cheon",
       author_email= "chun3720@hotmail.com",
-      packages = find_packages(where = "src"),
-      package_dir={'': 'src'},
+      packages = find_packages(where = "CSR"),
+      package_dir={'': 'CSR'},
       py_modules=[splitext(basename(path))[0] for path in glob('src/*.py')],
       install_requires = [
           
