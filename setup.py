@@ -29,7 +29,7 @@ setup(
           "pandas",
           "numpy",
           "matplotlib",
-          "scienceplot",
+          "scienceplots",
           "openpyxl",
           "seaborn",
           "csv",
