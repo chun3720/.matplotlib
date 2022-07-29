@@ -100,6 +100,7 @@ def get_graph(exp_obj, path):
     
  
 def main(date_path = year_path):
+    plt.style.use(["science", "no-latex"])
 
     raw_list, path, _, _ = fileloads(date_path, '.csv')
     exp = build_data(path, raw_list, Strength)
@@ -109,6 +110,7 @@ def main(date_path = year_path):
     get_graph(exp, path)
     
 if __name__ == "__main__":
+    
     main()
 
 

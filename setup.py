@@ -23,7 +23,8 @@ setup(
       author_email= "chun3720@hotmail.com",
       packages = find_packages(where = "CSR"),
       package_dir={'': 'CSR'},
-      py_modules=[splitext(basename(path))[0] for path in glob('src/*.py')],
+      py_modules=[splitext(basename(path))[0] for path in glob('CSR/*.py')],
+      include_package_data= True,
       install_requires = [
           
           "pandas",
@@ -32,10 +33,9 @@ setup(
           "scienceplots",
           "openpyxl",
           "seaborn",
-          "csv",
           "tqdm",
           "pygaps",
-          "impdeance",
+          "impedance",
           "pyxlsb",
           
           

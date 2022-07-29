@@ -428,6 +428,7 @@ def main(date_path = year_path):
     # get_multibox(exp_obj, path)
     
 if __name__ == "__main__":
+    plt.style.use(['science', 'no-latex'])
     main()
 
 

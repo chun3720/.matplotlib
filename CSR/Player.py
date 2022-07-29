@@ -27,13 +27,14 @@ def runCSR(direct = False):
     
     if str(parent_path) not in sys.path:
         sys.path.append(str(parent_path))
+        sys.path.append(path)
     
     # import ForMatplotlib
     if direct:
         code_list = [_ for _ in os.listdir(path) if _.endswith(".py")]
     else:
         code_list = [_ for _ in os.listdir(child_path) if _.endswith(".py")]
-    to_ignore = ["__init__.py", "loadexp.py", "Player.py", "Battery_GCDplot_old.py"]
+    to_ignore = ["__init__.py", "loadexp.py", "Player.py", "Battery_GCDplot_old.py", "__main__.py"]
     codes = [_ for _ in code_list if _ not in to_ignore]    
     # code_dict = {i:code for i, code in enumerate(codes)}
     code_dict = dict(enumerate(codes))
