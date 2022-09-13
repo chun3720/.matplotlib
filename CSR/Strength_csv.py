@@ -4,16 +4,29 @@ Created on Tue Jul 26 10:07:06 2022
 
 @author: user
 """
+import os
+
+
+
+import sys
+from pathlib import Path
+curr_path = os.getcwd()
+parent_path = Path(curr_path).parent
+sys.path.append(str(parent_path))
+
+# from CSR import loadexp
 
 from CSR.loadexp import *
 
 import pandas as pd
-import os
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 
 year_path = r"D:\Researcher\JYCheon\DATA\Strength"
+
+
 
 
 class Strength(Dataloads):

@@ -338,6 +338,9 @@ def get_export(exp, path):
     
     
 def get_multiplot(exp, path):
+    
+    output_path = f'{path}\\output\\'
+    
     color_list = ['k', 'r', 'tab:orange', 'g', 'b', 'm', 'gray', 'brown','darkcyan', 
                   'skyblue', 'hotpink', 'dodgerblue']
     # color_list = ["k"] + list(mcolors.TABLEAU_COLORS.values()) + ["b", "m", "g", "gray"]
@@ -364,6 +367,7 @@ def get_multiplot(exp, path):
         text.set_color(line.get_color())
     plt.xlabel("Time (s)")
     plt.ylabel("Voltage (V)")
+    plt.savefig(f"{output_path}GCD_tot.png", dpi = 300)
     plt.show() 
     
     for i, gcd in enumerate(GCDs):
@@ -394,6 +398,7 @@ def get_multiplot(exp, path):
         
         plt.xlabel("Voltage (V)")
         plt.ylabel("Current (mA)")
+        plt.savefig(f"{output_path}CV_tot.png", dpi = 300)
         plt.show()
         
         
