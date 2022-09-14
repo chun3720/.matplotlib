@@ -24,7 +24,9 @@ class LIB_tot(Dataloads):
     def __init__(self, path, file):       
         Dataloads.__init__(self, path, file)
         # (self.name, self.ext) = self.file.split('.')
-        self.raw = pd.read_csv(self.file_path, index_col = 0, encoding = "cp949") 
+        # self.raw = pd.read_csv(self.file_path, index_col = 0, encoding = "cp949") 
+        self.raw = pd.read_pickle(self.file_path)
+        self.raw.index = self.raw.index.astype('int64')
         # self.df.set_index('인덱스', inplace = True)
         self.X, self.Y = self.raw.columns[0], self.raw.columns[1]
         
@@ -220,18 +222,23 @@ def get_export(path, exp_obj, k=None):
 def csv_from_excel(path, file):
     
     print("loading............................\n")
-    wb = openpyxl.load_workbook(path + file)
+    wb = openpyxl.load_workbook(path + file, read_only = True, data_only = True)
     sheet_names = wb.worksheets
     target_sheet = sheet_names[1].title
     # ws = wb.get_sheet_by_name(target_sheet)
     ws = wb[target_sheet]
     name, ext = os.path.splitext(file)
-
-    with open(path + name + '.csv', 'w', newline = "") as f:
-        csv_writer = csv.writer(f)
-        for r in tqdm(ws.iter_rows()):            
-            csv_writer.writerow([cell.value for cell in r])
     
+    # with open(path + name + '.csv', 'w', newline = "") as f:
+    #     csv_writer = csv.writer(f)
+    #     for r in tqdm(ws.iter_rows()):            
+    #         csv_writer.writerow([cell.value for cell in r])
+    temp = []
+    for r in tqdm(ws.iter_rows()):
+        temp.append([cell.value for cell in r])
+    
+    df = pd.DataFrame(np.array(temp[1:]), columns = temp[0])
+    df.set_index("인덱스").to_pickle(f'{path}{name}.pkl')
 # runs the csv_from_excel function:
 
     
@@ -268,18 +275,18 @@ def main(date_path = year_path):
     
     else:
     
-        if (os.path.splitext(raw[0])[0] + ".csv") not in os.listdir(path):
+        if (os.path.splitext(raw[0])[0] + ".pkl") not in os.listdir(path):
             csv_from_excel(path, raw[0])
-            csv_list = [_ for _ in os.listdir(path) if _.endswith(".csv")]
+            csv_list = [_ for _ in os.listdir(path) if _.endswith(".pkl")]
         else:
-            csv_list = [_ for _ in os.listdir(path) if _.endswith(".csv")]
+            csv_list = [_ for _ in os.listdir(path) if _.endswith(".pkl")]
             
         
         exp_data = build_data(path, csv_list, LIB_tot)
         exp_data[0].get_check()
         done1 = False
         while not done1:
-            electrode = input("which electrode? a, anode or c, cathode: ")
+            electrode = input("which electrode? a, anode or c, cathode (or full cell): ")
             
             if electrode in ['A', 'a', 'c', "C"]:
                 done1 = True
@@ -317,8 +324,9 @@ def main(date_path = year_path):
             get_plot(output_path, exp_obj, k)
             get_result(output_path, exp_obj, k)
             get_export(output_path, exp_obj, k)
-            
-        final_plot(output_path, exp_obj, k)
+                   
+
+        final_plot(output_path, exp_obj, 5)
         
 if __name__ == "__main__":
     main()

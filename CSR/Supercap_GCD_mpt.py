@@ -11,6 +11,8 @@ import os
 from matplotlib import pyplot as plt
 import numpy as np
 import seaborn as sns
+import re
+
 # import shutil
 # from loadexp_0318 import *
 plt.style.use(['science', 'no-latex'])
@@ -43,9 +45,10 @@ class EC_measurement(Dataloads):
         with open(self.file_path, 'r') as f:
             lines = f.readlines()
             self.method = method_dict[lines[3]]
-            header = lines[1][18:20]    
+            # header = lines[1][18:20]   
+            h = re.findall('[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?', lines[1])
 
-        self.header = int(header)     
+        self.header = int(h[0])     
         self.df = pd.read_csv(self.file_path, skiprows = self.header-1, sep = '\t', header = 0)
         
         check = self.df["cycle number"].value_counts().to_dict()
@@ -134,9 +137,6 @@ class EC_measurement(Dataloads):
                 self.cap_result = self.Is * self.slope
             except:
                 pass
-
-
-                
 
         else:
             return None
@@ -250,10 +250,7 @@ class EC_measurement(Dataloads):
             except:
                 pass
 
-                
-            
-        
-        
+     
 def get_export(exp, path):
     # output_path = path + "output\\"
     output_path = f'{path}\\output\\'
@@ -412,11 +409,7 @@ def get_multibox(exp_obj, path):
     plt.show()
     # print(Box)
         
-    
-    
-    
-        
-        
+
     
 def main(date_path = year_path):
     raw_list, path, _, _ = fileloads(date_path, '.mpt')
@@ -425,6 +418,7 @@ def main(date_path = year_path):
         exp.get_calculation()
         exp.get_plot(path)
         exp.get_drop()
+        # print(exp.header)
         
         
         
