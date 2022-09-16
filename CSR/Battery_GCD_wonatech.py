@@ -23,7 +23,6 @@ class LIB_tot(Dataloads):
     # df_list = []
     def __init__(self, path, file):       
         Dataloads.__init__(self, path, file)
-        # (self.name, self.ext) = self.file.split('.')
         # self.raw = pd.read_csv(self.file_path, index_col = 0, encoding = "cp949") 
         self.raw = pd.read_pickle(self.file_path)
         self.raw.index = self.raw.index.astype('int64')
@@ -103,7 +102,7 @@ class LIB_tot(Dataloads):
         
         target_file = cycle_path.joinpath(f'{self.name}_cycle.xlsx')
         with pd.ExcelWriter(target_file) as writer:
-            df1.to_excel(writer, sheet_name = '데이터_1_1')     
+            df1.to_excel(writer, sheet_name = '데이터_1_1', index = False)     
         
         return output_path
     
@@ -124,7 +123,7 @@ class LIB_csv(Dataloads):
         self.min = self.df[self.Y].idxmin()
         self.max = self.df[self.Y].idxmax()
         self.positive = None
-        self.negative =  None
+        self.negative = None
     
     def __str__(self):
         self.label = self.name.replace("_", "-")
@@ -313,7 +312,7 @@ def main(date_path = year_path):
         done3 = False
         while not done3:
             
-            k = input("type separation unit: ")
+            k = input("\ntype separation unit: ")
             
             if k[0].isnumeric():
                 done3 = True

@@ -21,9 +21,8 @@ class LIB_tot(Dataloads):
     # df_list = []
     def __init__(self, path, file):
         Dataloads.__init__(self, path, file)
-        # (self.name, self.ext) = self.file.split('.')
-        self.data = pd.read_excel(self.file_path, sheet_name = '데이터_1_1', index_col = 0)
-        self.data.columns = ["cycle number", "Capacity"]
+        self.data = pd.read_excel(self.file_path, sheet_name = '데이터_1_1', names = ["cycle number", "Capacity"])
+        # self.data.columns = ["cycle number", "Capacity"]
         self.unit = "(Ah/g)"
         # self.X, self.Y = self.data.columns[0]
         self.x, self.y  = self.data.columns
@@ -33,18 +32,24 @@ class LIB_tot(Dataloads):
     def __str__(self):
         self.label = self.name.replace("_", "-")
         return self.label
+   
+
+def plot_setup(leg, title, xlabel, ylabel):
     
-    def cycle_plot(self, k = 3):
-        # columns = list(self.data.columns)
-        # self.X, self.Y = self.data[columns[0]], self.data[columns[1]]
-        plt.plot(self.X , self.Y, 'o', label = LIB_tot.__str__(self))
-        # plt.title(self.name + " with cycle", fontsize = 9)
-        plt.xlabel("Cycle nunmber")
-        plt.xticks(np.arange(0, max(x)+1, k))
-        # plt.yticks(np.arange(0, max(y)*1.1))
-        plt.ylabel("Specific Capacity ($Ah/g$)")
-        # plt.show()
-        
+    for line, text in zip(leg.get_lines(), leg.get_texts()):
+        text.set_color(line.get_color())
+    plt.title(title)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.show()
+  
+
+def export_with_plot(cols, exp_obj, writer, idx, basis = 1000, header = False):
+    
+    exp_obj.data[cols].assign(Capacity = exp_obj.data[cols][exp_obj.y] * basis).to_excel(writer, startcol =  2*idx, index= False, header = header)
+    plt.plot(exp_obj.X, exp_obj.Y*basis, 'o', label = exp_obj.name)
+
+    
 def get_export(exp, path, check = 'n', convertor = 'n'):
     output_path = f'{path}output\\'
     cols = exp[0].data.columns
@@ -56,41 +61,27 @@ def get_export(exp, path, check = 'n', convertor = 'n'):
         
         with pd.ExcelWriter(f'{output_path}Cycle_tot.xlsx') as writer:
             for i, cy in enumerate(exp):
-                (
-                    cy.data[cols].assign(Capacity = cy.data[cols][cy.y]*1000)
-                    .to_excel(writer, startcol = 2*i, index = False, header = ["mAh/g", cy.name])
-                    )
                 
-                plt.plot(cy.X, cy.Y*1000,'o', label = cy.name)
-                
-            leg = plt.legend(fontsize = 'xx-small')
-            for line, text in zip(leg.get_lines(), leg.get_texts()):
-                text.set_color(line.get_color())
-            plt.xlabel("Cycle nunmber")
-            plt.ylabel("Specific Capacity ($mAh/g$)")
-            plt.show()
-        
+                export_with_plot(cols, cy, writer, i, header = ["mAh/g", cy.name])          
+            
+            leg = plt.legend(fontsize = 'xx-small')            
+            plot_setup(leg, "","Cycle number", "Specific Capacity ($mAh/g$)" )
+            
+       
         if convertor != 'n':
             
             with pd.ExcelWriter(f'{output_path}Cycle_recalculation.xlsx') as writer:
 
                 for i, cy in enumerate(exp):
                     
-                    quest = input(f"type conversion factor for '{cy.file}' (make sure it means denominator): ")
+                    quest = input(f"type conversion factor(C) for '{cy.file}', ex) new_value = prev_value * C: ")
                     basis = float(quest)
-                    (
-                     cy.data[cols].assign(Capacity = cy.data[cols][cy.y]*1000/basis)   
-                     .to_excel(writer, startcol = 2*i, index = False, header = ["mAh/g(re)", cy.name])                    
-                        )
-                    plt.plot(cy.X, cy.Y*1000/basis, 'o', label = cy.name)  
+                    
+                    export_with_plot(cols, cy, writer, i, basis*1000, header = ["mAh/g(re)", cy.name])          
+                    
                 leg = plt.legend(fontsize = 'xx-small')
-                for line, text in zip(leg.get_lines(), leg.get_texts()):
-                    text.set_color(line.get_color())
-                plt.title("recalculation")
-                plt.xlabel("Cycle nunmber")
-                plt.ylabel("Specific Capacity ($mAh/g_{re}$)")
-                plt.show()
-        
+                plot_setup(leg, "recalculation", "Cycle number", "Specific Capacity ($mAh/g_{re}$)" )
+                
     else:
         with pd.ExcelWriter(f'{output_path}Cycle_tot.xlsx') as writer:
     
@@ -107,22 +98,11 @@ def get_export(exp, path, check = 'n', convertor = 'n'):
 
                 for i, cy in enumerate(exp):
                     quest = input(f"type conversion factor for '{cy.file}' (make sure it means denominator): ")
-                    basis = float(quest)
+                    basis = float(quest)                    
+                    export_with_plot(cols, cy, writer, i, basis, header = ["Ah/g(re)", cy.name])          
 
-                    (
-                        cy.data[cols].assign(Capacity = cy.data[cols][cy.y]/basis)   
-                        .to_excel(writer, startcol = 2*i, index = False, header = ["Ah/g(re)", cy.name])                    
-                        )
-            
-                    plt.plot(cy.X, cy.Y/basis, 'o', label = cy.name)
-                    
-                leg = plt.legend(fontsize = 'xx-small')
-                for line, text in zip(leg.get_lines(), leg.get_texts()):
-                    text.set_color(line.get_color())
-                plt.title("recalculation")
-                plt.xlabel("Cycle nunmber")
-                plt.ylabel("Specific Capacity ($Ah/g_{re}$)")
-                plt.show()
+                leg = plt.legend(fontsize = 'xx-small')    
+                plot_setup(leg, "recalculation", "Cycle number", "Specific Capacity ($Ah/g_{re}$)" )
                     
 
 def cycle_plt(exp):
@@ -131,15 +111,10 @@ def cycle_plt(exp):
     for ex in exp:
         name = ex.name.replace("_", "-")
         plt.plot(ex.X, ex.Y, 'o', label = name)
-        # exp[i].cycle_plot(k)
-    
+        
     leg = plt.legend(fontsize = 'xx-small')
-    for line, text in zip(leg.get_lines(), leg.get_texts()):
-        text.set_color(line.get_color())
+    plot_setup(leg, "","Cycle number", "Specific Capacity ($Ah/g$)" )
     
-    plt.xlabel("Cycle nunmber")
-    plt.ylabel("Specific Capacity ($Ah/g$)")
-    plt.show()
 
 def main(date_path = year_path):
     
