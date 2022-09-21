@@ -31,7 +31,7 @@ def add_median_labels(ax, fmt='.1f'):
                        fontweight='bold', color='black')
         # create median-colored border around white text for contrast
         # text.set_path_effects([
-        #     path_effects.Stroke(linewidth=3, foreground=median.get_color()),
+        #     path_effects.Stroke(linewidth=3, fore16ground=median.get_color()),
         #     path_effects.Normal(),
         # ])
         
