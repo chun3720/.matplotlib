@@ -63,7 +63,7 @@ def raw_plot(path, obj_list):
     
     x, y = obj_list[0].raw.columns
     
-    with pd.ExcelWriter(obj_list[-1].output_path + "total.xlsx") as writer:
+    with pd.ExcelWriter(obj_list[-1].output_path + "EIS_total.xlsx") as writer:
         for i, exp in enumerate(obj_list):
             plt.plot(exp.raw[x], exp.raw[y], label = exp.name, color = color_list[i%n])
             (exp.raw[[x, y]]
