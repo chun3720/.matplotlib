@@ -81,53 +81,44 @@ def raw_plot(path, obj_list):
 
 
 
-done = False
 
-while not done:
-    check = input("select method: splitting total data(x) or not (c): ")
-    
-    
-    if check.lower() == "x":
-        done = True
         
-        raw, path, _, _ = fileloads(year_path, ".xlsx")
-        if not os.path.exists(f'{path}raw_split\\'):
+        
+        
+
+
+def main(date_path = year_path):    
+    done = False
+
+    while not done:
+        check = input("select method: splitting total data(x) or not (c): ")
+        
+        
+        if check.lower() == "x":
+            done = True
             
-            exp_obj = build_data(path, raw, EIS_tot)
-        
-        raw_path = f'{path}raw_split\\'
-        raw_list = [_ for _ in os.listdir(raw_path) if _.endswith(".csv")]
+            raw, path, _, _ = fileloads(year_path, ".xlsx")
+            if not os.path.exists(f'{path}raw_split\\'):
+                
+                exp_obj = build_data(path, raw, EIS_tot)
+            
+            raw_path = f'{path}raw_split\\'
+            raw_list = [_ for _ in os.listdir(raw_path) if _.endswith(".csv")]
 
-        sep_obj = build_data(raw_path, raw_list, EIS_raw)
-        raw_plot(raw_path, sep_obj)
-        
-    elif check.lower() == "c":
-        
-        done = True
-        
-        raw, path, _, _ = fileloads(year_path, ".csv")
-        sep_obj = build_data(path, raw, EIS_raw)
-        raw_plot(path, sep_obj)
-        
-    else:
-        print("Unvalid option!!\n")
-        
-        
-        
+            sep_obj = build_data(raw_path, raw_list, EIS_raw)
+            raw_plot(raw_path, sep_obj)
+            
+        elif check.lower() == "c":
+            
+            done = True
+            
+            raw, path, _, _ = fileloads(year_path, ".csv")
+            sep_obj = build_data(path, raw, EIS_raw)
+            raw_plot(path, sep_obj)
+            
+        else:
+            print("Unvalid option!!\n")
 
 
-# def main(date_path = year_path):    
-#     raw, path, _, _ = fileloads(date_path, ".xlsx")
-#     if not os.path.exists(f'{path}raw_split\\'):
-        
-#         exp_obj = build_data(path, raw, EIS_tot)
-#     # exp_path = f'{path}raw_split\\'
-#     # exp_list = [_ for _ in os.listdir(exp_path) if _.endswith(".csv") ]
-    
-#     # sep_obj = build_data(exp_path, exp_list, Capacitance)
-#     # get_cap_result(sep_obj, exp_path)
-#     # get_multiplot(sep_obj, exp_path)
-#     # get_export(sep_obj, exp_path)
-
-# if __name__ == "__main__":
-#     main()
+if __name__ == "__main__":
+    main()
