@@ -97,7 +97,7 @@ def main(date_path = year_path):
         if check.lower() == "x":
             done = True
             
-            raw, path, _, _ = fileloads(year_path, ".xlsx")
+            raw, path, _, _ = fileloads(date_path, ".xlsx")
             if not os.path.exists(f'{path}raw_split\\'):
                 
                 exp_obj = build_data(path, raw, EIS_tot)
@@ -112,7 +112,7 @@ def main(date_path = year_path):
             
             done = True
             
-            raw, path, _, _ = fileloads(year_path, ".csv")
+            raw, path, _, _ = fileloads(date_path, ".csv")
             sep_obj = build_data(path, raw, EIS_raw)
             raw_plot(path, sep_obj)
             
