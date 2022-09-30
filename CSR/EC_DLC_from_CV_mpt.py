@@ -10,6 +10,7 @@ import pandas as pd
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+from pathlib import Path
 plt.style.use(['science', 'no-latex'])
 year_path = r"D:\Researcher\JYCheon\DATA\Electrochemistry\2022\Raw"
 
@@ -63,7 +64,7 @@ class DLC_builder(Dataloads):
         self.slope, self.intercept = XX
         
     def get_dlc_result(self):
-        dlc_rs = pd.DataFrame({'Scan rate (mV/s)' : self.X, 'DLC current (mA)' : self.Y, 'Fitted (mA)' : self.slope*self.X})
+        dlc_rs = pd.DataFrame({'Scan rate (mV/s)' : self.X, 'DLC current (mA)' : self.Y, 'Fitted (mA)' : self.slope*self.X + self.intercept})
         dlc_rs.set_index('Scan rate (mV/s)', inplace = True)
         dlc_rs.loc[5, 'Total Capacitance (uF)'] = self.slope*1000000
         dlc_rs.loc[5, 'Length Capacitance (uF/cm)'] = self.slope*1000000/3
@@ -84,6 +85,8 @@ def get_plot(exp_obj, exp_name):
         exp.get_rate()
         exp.get_dlc()
         plt.plot(exp.df["Ewe/V"], exp.df["<I>/mA"])
+        # y axis for CV graph
+        plt.ylim(-0.02, 0.02)
         plt.title(exp_name)
         plt.xlabel('Potential (V vs. OCP)')
         plt.xlim(-0.06, 0.06)
@@ -112,6 +115,8 @@ def get_DLCplot(path, exp_obj, exp_name):
     return dlc_df
     
 def get_export(path, exp_obj, dlc_df, exp_name):
+    
+    
     output_path = os.path.join(path, "output\\")
     if not os.path.exists(output_path):
         os.mkdir(output_path)
@@ -120,6 +125,47 @@ def get_export(path, exp_obj, dlc_df, exp_name):
             label = f'{exp.rate} mV/s'
             exp.df[["Ewe/V", "<I>/mA"]].to_excel(writer, sheet_name = 'CV', startcol = 2*i, index = False, header = [f'{i}', label])
         dlc_df.to_excel(writer, sheet_name = 'DLC')
+        
+    summary_path = (
+        Path(path)
+        .parent
+        .joinpath("summary")    
+        )
+    
+    if not summary_path.exists():
+        summary_path.mkdir()
+        
+    summary_file = summary_path.joinpath("summary.xlsx")
+    cols  = dlc_df.columns
+    
+    if not summary_file.exists():
+    
+        with pd.ExcelWriter(summary_file) as writer:
+            dlc_df[cols[:2]].to_excel(writer, header = [f"{exp_name}_raw", f"{exp_name}_fit"])
+            
+    else:
+        df = pd.read_excel(summary_file)
+        max_col = len(df.columns)
+        with pd.ExcelWriter(summary_file, mode = "a", engine= "openpyxl", if_sheet_exists="overlay") as writer:
+            dlc_df[cols[:2]].to_excel(writer, startcol = max_col, header = [f"{exp_name}_raw", f"{exp_name}_fit"])
+            
+            
+            
+            
+        
+def get_legacy(exp, year_path, path):
+    output_path = path + 'export\\'
+    df = pd.read_excel(output_path + "Total.xlsx", sheet_name = "Summary", index_col = 0)
+    # df2 = pd.read_excel(year_path + '\\legacy.xlsx', index_col = 0)   
+    # df3 = pd.concat([df, df2], axis = 0)
+    with pd.ExcelWriter(year_path + '\\legacy.xlsx', mode = 'a', engine = 'openpyxl',
+                        if_sheet_exists = 'overlay') as writer:
+        df.to_excel(writer, sheet_name = 'Summary', startrow = writer.sheets["Summary"].max_row, header = None)    
+    print(df)
+    # print(df2)     
+    
+    
+    
 
 def main(date_path = year_path):
         
