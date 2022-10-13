@@ -65,6 +65,8 @@ class LIB_tot(Dataloads):
             
   
         self.idxx = [0] + list(self.idx_list_values)
+        
+        # print(self.idx_list_values)
         df_list = []
         
         output_path = os.path.join(self.path, 'split\\')
@@ -79,6 +81,7 @@ class LIB_tot(Dataloads):
         
         for i in range(n):
             
+
             df = self.data.iloc[self.idxx[i]:self.idxx[i+1]]
             df.to_csv(f'{output_path}cycle{i+1}.csv', encoding = "cp949")
             # df.to_csv(output_path + "cycle" + str(i+1) + ".csv", encoding = "cp949")        
@@ -87,6 +90,8 @@ class LIB_tot(Dataloads):
             capacity_list.append(cap)
             idx_list.append(i+1)
             progress_bar(i+1, n)     
+            
+
         
         d = {"Cycle": idx_list, "Capacity (Ah/g)" : capacity_list}
         df1 = pd.DataFrame(data = d, index = idx_list)      
@@ -130,7 +135,7 @@ class LIB_csv(Dataloads):
         return self.label
     
     def df_indexing(self):
-        if self.df.iloc[0, 1] > self.df.iloc[5, 1]:
+        if self.df.iloc[0, 1] > self.df.iloc[3, 1]:
             self.negative = self.df.loc[:self.min]
             self.positive = self.df.loc[self.min+1 :]  
         else:
@@ -325,7 +330,7 @@ def main(date_path = year_path):
             get_export(output_path, exp_obj, k)
                    
 
-        final_plot(output_path, exp_obj, 5)
+        final_plot(output_path, exp_obj, k)
         
         
 

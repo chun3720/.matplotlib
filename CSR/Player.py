@@ -53,16 +53,13 @@ def runCSR(direct = False):
     print("\n\n")
     print(f"Current package: {package_to_load}\n")
     
-    module.main()
+    module.main(data_path)
     
-if __name__ == "__main__":
-    runCSR(True)
-
 
 
 # module.main(data_path)
 
-def GUI_load(module):
+def GUI_load():
     import PySimpleGUI as sg
 
     dir_path = sg.popup_get_folder("Select Folder")
@@ -73,8 +70,13 @@ def GUI_load(module):
     else:
         sg.popup(f"The folder you chose was {dir_path}")
         
-    module.main(dir_path)
+    # module.main(dir_path)
     
+if __name__ == "__main__":
+    runCSR(True)
 
-# GUI_load(module)
+# GUI_load()
+
+
+    
 

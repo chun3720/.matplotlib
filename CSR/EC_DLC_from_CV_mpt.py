@@ -146,26 +146,23 @@ def get_export(path, exp_obj, dlc_df, exp_name):
     else:
         df = pd.read_excel(summary_file)
         max_col = len(df.columns)
-        with pd.ExcelWriter(summary_file, mode = "a", engine= "openpyxl", if_sheet_exists="overlay") as writer:
-            dlc_df[cols[:2]].to_excel(writer, startcol = max_col, header = [f"{exp_name}_raw", f"{exp_name}_fit"])
+        header = [f"{exp_name}_raw", f"{exp_name}_fit"]
+        if header[0] in df.columns:
+            print()
+            check = input(f"Data for <{exp_name}> is already exist. Do you want to replace? yes (y) or no (n): ")
+            
+            
+        if check.lower() == "y":
+            
+            with pd.ExcelWriter(summary_file, mode = "a", engine= "openpyxl", if_sheet_exists="overlay") as writer:
+                dlc_df[cols[:2]].to_excel(writer, startcol = max_col-3, header = header)
+        else:
+            with pd.ExcelWriter(summary_file, mode = "a", engine= "openpyxl", if_sheet_exists="overlay") as writer:
+                dlc_df[cols[:2]].to_excel(writer, startcol = max_col, header = header)
             
             
             
-            
-        
-def get_legacy(exp, year_path, path):
-    output_path = path + 'export\\'
-    df = pd.read_excel(output_path + "Total.xlsx", sheet_name = "Summary", index_col = 0)
-    # df2 = pd.read_excel(year_path + '\\legacy.xlsx', index_col = 0)   
-    # df3 = pd.concat([df, df2], axis = 0)
-    with pd.ExcelWriter(year_path + '\\legacy.xlsx', mode = 'a', engine = 'openpyxl',
-                        if_sheet_exists = 'overlay') as writer:
-        df.to_excel(writer, sheet_name = 'Summary', startrow = writer.sheets["Summary"].max_row, header = None)    
-    print(df)
-    # print(df2)     
-    
-    
-    
+
 
 def main(date_path = year_path):
         

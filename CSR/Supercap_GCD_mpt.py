@@ -5,7 +5,7 @@ Created on Thu Apr 14 14:36:11 2022
 @author: user
 """
 
-from loadexp import *
+from loadexp import fileloads, build_data, Dataloads, progress_bar
 import pandas as pd
 import os
 from matplotlib import pyplot as plt
@@ -142,8 +142,8 @@ class EC_measurement(Dataloads):
             return None
         
     def get_condition(self):
-        
-        return f'{self.appl_current} {self.appl_unit}'
+        curr = round(self.appl_current, 2)
+        return f'{curr} {self.appl_unit}'
         
     def get_capacitance(self):
 
