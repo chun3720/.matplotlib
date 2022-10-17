@@ -5,7 +5,7 @@ Created on Thu May 12 13:44:33 2022
 @author: user
 """
 
-from loadexp import *
+from loadexp import Dataloads, fileloads, build_data
 import pandas as pd
 import os
 import numpy as np
@@ -164,9 +164,9 @@ def get_export(path, exp_obj, dlc_df, exp_name):
             
 
 
-def main(date_path = year_path):
+def main(py_path):
         
-    raw_list, path_dir, exp_name, exp_title = fileloads(date_path, '.mpt')
+    raw_list, path_dir, exp_name, exp_title = fileloads(py_path, '.mpt')
     exp_obj = build_data(path_dir, raw_list, DLC_builder)
     
     get_plot(exp_obj, exp_name)
@@ -174,4 +174,4 @@ def main(date_path = year_path):
     get_export(path_dir, exp_obj, dlc_df, exp_name)
 
 if __name__ == "__main__":
-    main()
+    main(year_path)

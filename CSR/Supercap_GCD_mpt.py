@@ -5,13 +5,14 @@ Created on Thu Apr 14 14:36:11 2022
 @author: user
 """
 
-from loadexp import fileloads, build_data, Dataloads, progress_bar
+from loadexp import fileloads, build_data, Dataloads, progress_bar, GUI_load, get_data_folder
 import pandas as pd
-import os
+import os, sys
 from matplotlib import pyplot as plt
 import numpy as np
 import seaborn as sns
 import re
+from pathlib import Path
 
 # import shutil
 # from loadexp_0318 import *
@@ -399,20 +400,22 @@ def get_multiplot(exp, path):
         plt.show()
         
         
-def get_multibox(exp_obj, path):
-    Box = {}
-    for exp in exp_obj:
-        df = pd.DataFrame(data = exp.caps_mF)
-        Box[f'{exp.name}'] = exp.caps_mF
+# def get_multibox(exp_obj, path):
+#     Box = {}
+#     for exp in exp_obj:
+#         df = pd.DataFrame(data = exp.caps_mF)
+#         Box[f'{exp.name}'] = exp.caps_mF
         
-    sns.boxplot(data = Box)
-    plt.show()
+#     sns.boxplot(data = Box)
+#     plt.show()
     # print(Box)
         
 
+
+
+def main(py_path):
     
-def main(date_path = year_path):
-    raw_list, path, _, _ = fileloads(date_path, '.mpt')
+    raw_list, path, _, _ = fileloads(py_path, '.mpt')
     exp_obj = build_data(path, raw_list, EC_measurement)
     for exp in exp_obj:
         exp.get_calculation()
@@ -428,7 +431,8 @@ def main(date_path = year_path):
     
 if __name__ == "__main__":
     plt.style.use(['science', 'no-latex'])
-    main()
+    
+    main(year_path)
 
 
 # for test

@@ -5,15 +5,14 @@ Created on Wed Mar 30 14:26:05 2022
 @author: user
 """
 
-from loadexp import *
+from loadexp import Dataloads, fileloads, build_data, get_data_folder
 import pandas as pd
 import os
 from matplotlib import pyplot as plt
-import numpy as np
 # from loadexp_0318 import *
 from openpyxl import load_workbook
 import csv
-import tqdm
+
 # import peakdetect
 
 
@@ -78,16 +77,11 @@ def raw_plot(path, obj_list):
     plt.ylim(0, 300)
     plt.xlabel("$Z'[Ohms]$", fontsize = 12)
     plt.ylabel("$-Z''[Ohms]$", fontsize = 12)
+    plt.show()
 
 
 
-
-        
-        
-        
-
-
-def main(date_path = year_path):    
+def main(py_path):    
     done = False
 
     while not done:
@@ -97,7 +91,7 @@ def main(date_path = year_path):
         if check.lower() == "x":
             done = True
             
-            raw, path, _, _ = fileloads(date_path, ".xlsx")
+            raw, path, _, _ = fileloads(py_path, ".xlsx")
             if not os.path.exists(f'{path}raw_split\\'):
                 
                 exp_obj = build_data(path, raw, EIS_tot)
@@ -112,7 +106,7 @@ def main(date_path = year_path):
             
             done = True
             
-            raw, path, _, _ = fileloads(date_path, ".csv")
+            raw, path, _, _ = fileloads(py_path, ".csv")
             sep_obj = build_data(path, raw, EIS_raw)
             raw_plot(path, sep_obj)
             
@@ -121,4 +115,4 @@ def main(date_path = year_path):
 
 
 if __name__ == "__main__":
-    main()
+    main(year_path)

@@ -4,11 +4,9 @@ Created on Wed Mar 24 09:06:16 2021
 last update : Feb 15 2022
 @author: jycheon
 """
-from loadexp import *
+from loadexp import Dataloads, fileloads, build_data, get_data_folder
 import pandas as pd
 import os
-import string
-import numpy as np
 from matplotlib import pyplot as plt
 
 # plt.style.use(['science', 'grid'])
@@ -116,9 +114,9 @@ def cycle_plt(exp):
     plot_setup(leg, "","Cycle number", "Specific Capacity ($Ah/g$)" )
     
 
-def main(date_path = year_path):
+def main(py_path):
     
-    raw, path, _, _ = fileloads(date_path, ".xlsx")
+    raw, path, _, _ = fileloads(py_path, ".xlsx")
     exp_data = build_data(path, raw, LIB_tot)
     
     cycle_plt(exp_data)
@@ -129,7 +127,7 @@ def main(date_path = year_path):
     get_export(exp_data, path, check, convertor)
     
 if __name__ == "__main__":
-    main()
+    main(year_path)
 
 
 

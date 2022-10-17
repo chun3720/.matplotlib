@@ -8,15 +8,16 @@ Created on Wed May 11 10:51:00 2022
 import os
 import importlib
 from pathlib import Path
+from loadexp import GUI_load, get_data_folder
 import sys
-
+import pandas as pd
 
 
 
 """
 modify the below 'data_path' for your data folder path
 """
-data_path = r"D:\Researcher\JYCheon\DATA"
+
 
 def runCSR(direct = False):
 
@@ -44,6 +45,7 @@ def runCSR(direct = False):
     
     selector = input("which file want to run: ")
     chosen = int(selector)
+    year_path = get_data_folder(code_dict[chosen]) 
     to_import, ext = os.path.splitext(code_dict[chosen])
     
     # package_to_load = f'ForMatplotlib.{to_import}'
@@ -53,26 +55,12 @@ def runCSR(direct = False):
     print("\n\n")
     print(f"Current package: {package_to_load}\n")
     
-    module.main(data_path)
+    module.main(year_path)
     
 
-
-# module.main(data_path)
-
-def GUI_load():
-    import PySimpleGUI as sg
-
-    dir_path = sg.popup_get_folder("Select Folder")
-    if not dir_path:
-        sg.popup("Cancel", "No folder selected")
-        raise SystemExit("Cancelling: no folder selected")
-        
-    else:
-        sg.popup(f"The folder you chose was {dir_path}")
-        
-    # module.main(dir_path)
     
 if __name__ == "__main__":
+    # year_path = get_data_folder()
     runCSR(True)
 
 # GUI_load()

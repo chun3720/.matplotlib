@@ -9,6 +9,9 @@ import os
 from dataclasses import dataclass
 from typing import List
 from pathlib import Path
+import sys
+import pandas as pd
+
 
 def path_gen(path: str, file_ext: str = None) -> str:
     print('\nCurrent path: ')
@@ -94,6 +97,20 @@ def progress_bar(progress: int, total: int) -> None:
 #         # self.name, self.ext = self.file.split('.')
 #         self.name, self.ext = os.path.splitext(self.file)
         
+
+def GUI_load():
+    import PySimpleGUI as sg
+
+    dir_path = sg.popup_get_folder("Select Folder")
+    if not dir_path:
+        sg.popup("Cancel", "No folder selected")
+        raise SystemExit("Cancelling: no folder selected")
+        
+    else:
+        sg.popup(f"The folder you chose was {dir_path}")
+        
+    return dir_path
+
 @dataclass
 class Dataloads:
     path : str
@@ -119,3 +136,48 @@ def build_data(path: str, file: List[str], builder: object) -> List[object]:
 # from datetime import datetime
 
 # print(datetime.now().isoformat(timespec = 'minutes'))
+
+def get_data_folder(py_name):
+
+
+    curr_path = Path(os.getcwd())
+    
+    mother_path = curr_path.parent.parent
+    
+    path_info = "path_ref.pkl"
+    
+    path_file = mother_path.joinpath(path_info)
+    
+    if path_file.exists():
+        df = pd.read_pickle(path_file)
+        
+        # print("yes")
+    else:
+        
+        year_path = GUI_load()
+        
+        info = {"python_name": [f"{py_name}"],
+                "path_name" : [year_path]}
+        
+        df = pd.DataFrame(info)
+        df = df.set_index("python_name")
+        
+        df.to_pickle(path_file)
+    
+    try:
+        year_path = Path(df.loc[py_name][0])
+    except KeyError:
+        print(f"\nError! path for {py_name} does not exist. Please check")
+        year_path = GUI_load()
+        df.loc[py_name] = year_path
+        df.to_pickle(path_file)
+        year_path = Path(df.loc[py_name][0])
+        
+    
+    if not year_path.exists():
+        print("path does not exists. please select")
+        df.loc[py_name] = GUI_load()
+        df.to_pickle(path_file)
+    
+    return year_path
+

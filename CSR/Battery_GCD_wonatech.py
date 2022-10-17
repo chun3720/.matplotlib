@@ -4,20 +4,18 @@ Created on Wed Mar 24 09:06:16 2021
 last update : Feb 15 2022
 @author: jycheon
 """
-from loadexp import *
+from loadexp import Dataloads, fileloads, build_data, progress_bar, get_data_folder
 import pandas as pd
-import os
-import string
+import os, sys
 import numpy as np
 from matplotlib import pyplot as plt
 import openpyxl
-import csv
 from pathlib import Path
 from tqdm import tqdm
 
 # plt.style.use('science')
 plt.style.use(['science', 'no-latex'])
-year_path = "D:\\Researcher\\JYCheon\\DATA\\Electrochemistry\\Coin cell\\2022"
+# year_path = "D:\\Researcher\\JYCheon\\DATA\\Electrochemistry\\Coin cell\\2022"
 
 class LIB_tot(Dataloads):  
     # df_list = []
@@ -65,9 +63,7 @@ class LIB_tot(Dataloads):
             
   
         self.idxx = [0] + list(self.idx_list_values)
-        
-        # print(self.idx_list_values)
-        df_list = []
+
         
         output_path = os.path.join(self.path, 'split\\')
         
@@ -246,7 +242,10 @@ def csv_from_excel(path, file):
 # runs the csv_from_excel function:
 
     
-def main(date_path = year_path):
+
+# year_path = get_data_folder("Battery_GCD_wonatech.py")
+ 
+def main(year_path):
     done0 =  False    
     
     while not done0:
@@ -261,7 +260,7 @@ def main(date_path = year_path):
     elif get_input.lower() == "c":
         ext = "csv"
     
-    raw, path, _, _ = fileloads(date_path, ext)
+    raw, path, _, _ = fileloads(year_path, ext)
     
     if get_input == "x" and len(raw) > 1:
         import Battery_GCDplot_old as xl
@@ -331,8 +330,11 @@ def main(date_path = year_path):
                    
 
         final_plot(output_path, exp_obj, k)
-        
-        
+   
 
 if __name__ == "__main__":
-    main()
+    year_path = get_data_folder(Path(sys.argv[0]).name)
+    main(year_path)
+    
+    
+    
