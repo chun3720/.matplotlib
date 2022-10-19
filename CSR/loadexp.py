@@ -9,7 +9,6 @@ import os
 from dataclasses import dataclass
 from typing import List
 from pathlib import Path
-import sys
 import pandas as pd
 
 
@@ -154,30 +153,37 @@ def get_data_folder(py_name):
         # print("yes")
     else:
         
-        year_path = GUI_load()
+        year_path = Path(GUI_load())
         
-        info = {"python_name": [f"{py_name}"],
-                "path_name" : [year_path]}
+        info = {"python_name": [f"{py_name}", "Capacity_norm_op", "Capacity_specific_op"],
+                "path_name" : [year_path, "", ""],
+                "op" : ["", "", ""]}
         
         df = pd.DataFrame(info)
         df = df.set_index("python_name")
         
         df.to_pickle(path_file)
+        
+        return year_path
     
     try:
-        year_path = Path(df.loc[py_name][0])
+        year_path = df["path_name"].loc[py_name]
     except KeyError:
         print(f"\nError! path for {py_name} does not exist. Please check")
-        year_path = GUI_load()
-        df.loc[py_name] = year_path
+        year_path = Path(GUI_load())
+        df.loc[py_name] = year_path, ""
+        # df["path_name"].loc[py_name] = year_path
         df.to_pickle(path_file)
-        year_path = Path(df.loc[py_name][0])
+        
+        return year_path
         
     
     if not year_path.exists():
         print("path does not exists. please select")
-        df.loc[py_name] = GUI_load()
+        year_path = Path(GUI_load())
+        df.loc[py_name] = year_path, ""
         df.to_pickle(path_file)
+        
     
     return year_path
 

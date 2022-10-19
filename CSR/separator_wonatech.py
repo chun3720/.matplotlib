@@ -58,5 +58,19 @@ path = Path(os.getcwd())
 
 path_ref = "path_ref.pkl"
 
-df = pd.read_pickle(path.joinpath(path_ref))
 
+pkl_path = path.parent.parent.joinpath(path_ref)
+
+
+
+mother_path = path.parent.parent
+
+xl_file = "path_ref.xlsx"
+
+
+
+# df2 = pd.read_excel(mother_path.joinpath(xl_file), index_col = 0)
+
+# df2.to_pickle(pkl_path)
+
+df = pd.read_pickle(pkl_path)

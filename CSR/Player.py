@@ -8,15 +8,9 @@ Created on Wed May 11 10:51:00 2022
 import os
 import importlib
 from pathlib import Path
-from loadexp import GUI_load, get_data_folder
+from loadexp import get_data_folder
 import sys
-import pandas as pd
 
-
-
-"""
-modify the below 'data_path' for your data folder path
-"""
 
 
 def runCSR(direct = False):
