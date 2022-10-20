@@ -251,6 +251,16 @@ class EC_measurement(Dataloads):
             except:
                 pass
 
+
+
+def get_capacity_tot(exp_obj, cols):
+    
+    return pd.concat([exp_obj.df_charge[cols].reset_index(drop = True)
+              ,exp_obj.df_discharge[cols].reset_index(drop = True) ]
+              ,axis = 1, ignore_index = True)
+    
+
+
      
 def get_export(exp, path):
     # output_path = path + "output\\"
@@ -285,37 +295,55 @@ def get_export(exp, path):
     d = {"Capacitance (I*dt/dV)": cap_list, "unit": cap_unit, "Current": Is_list}
     df1 = pd.DataFrame(data = d, index = GCD_list)
     
-    
+    gcd_pkl_file = f'{output_path}\\GCD_tot.pkl'    
     with pd.ExcelWriter(f'{output_path}\\GCD_tot.xlsx') as writer:
         n= len(GCDs)
         progress_bar(0, n)
+        gcd_tot_df = pd.DataFrame()
+        gcd_header_tot = []
         for i, gcd in enumerate(GCDs):
             cols = ["time/s", "<Ewe>/V"]
+            header = [f"time_{i}", gcd.name]
             (
              gcd.df[cols]
-             .to_excel(writer, startcol = 2*i, index = False, header = [f"time_{i}", gcd.name])
+             .to_excel(writer, startcol = 2*i, index = False, header = header)
+             
              )
+            gcd_header_tot += header
+            gcd_tot_df = pd.concat([gcd_tot_df, gcd.df[cols]], axis = 1, ignore_index = True)
             progress_bar(i+1, n)
+        gcd_tot_df.columns = gcd_header_tot
+        gcd_tot_df.to_pickle(gcd_pkl_file)
         df1.to_excel(writer, sheet_name = 'Summary')
         
-        
+    pkl_file = f'{output_path}\\Capacity_tot.pkl'    
     with pd.ExcelWriter(f'{output_path}\\Capacity_tot.xlsx') as writer:
         
         n= len(GCDs)
         progress_bar(0, n)
+        tot_df = pd.DataFrame()
+        header_tot = []
         for i, gcd in enumerate(GCDs):
             
             cols = ["Capacity/mA.h", "<Ewe>/V"]
+            header = [ f'Charge_{i}', f'V_{i}', f'Discharge_{i}',gcd.name ]
+            capacity_df = get_capacity_tot(gcd, cols)
             (
-                pd.concat([gcd.df_charge[cols].reset_index(drop = True)
-                          ,gcd.df_discharge[cols].reset_index(drop = True) ]
-                          ,axis = 1, ignore_index = True)
+                # pd.concat([gcd.df_charge[cols].reset_index(drop = True)
+                #           ,gcd.df_discharge[cols].reset_index(drop = True) ]
+                #           ,axis = 1, ignore_index = True)
+                capacity_df
                 .to_excel(writer, startcol = 4*i, index = False
-                          ,header = [ f'Charge_{i}', f'V_{i}', f'Discharge_{i}',gcd.name ])
+                          ,header = header)
                 )
-            
+            header_tot += header
+            tot_df = pd.concat([tot_df, capacity_df], axis = 1, ignore_index = True)
             progress_bar(i+1, n)
-                
+        
+        tot_df.columns = header_tot
+        tot_df.to_pickle(pkl_file)
+        
+       
             
 
     if CVs:

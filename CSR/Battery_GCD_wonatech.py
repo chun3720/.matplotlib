@@ -15,7 +15,7 @@ from tqdm import tqdm
 
 # plt.style.use('science')
 plt.style.use(['science', 'no-latex'])
-# year_path = "D:\\Researcher\\JYCheon\\DATA\\Electrochemistry\\Coin cell\\2022"
+year_path = "D:\\Researcher\\JYCheon\\DATA\\Electrochemistry\\Coin cell\\2022"
 
 class LIB_tot(Dataloads):  
     # df_list = []
@@ -23,7 +23,10 @@ class LIB_tot(Dataloads):
         Dataloads.__init__(self, path, file)
         # self.raw = pd.read_csv(self.file_path, index_col = 0, encoding = "cp949") 
         self.raw = pd.read_pickle(self.file_path)
-        self.raw.index = self.raw.index.astype('int64')
+        fcols = self.raw.select_dtypes('float').columns
+        
+        self.raw[fcols] = self.raw[fcols].apply(pd.to_numeric, downcast='float')
+        self.raw.index = self.raw.index.astype('int32')
         # self.df.set_index('인덱스', inplace = True)
         self.X, self.Y = self.raw.columns[0], self.raw.columns[1]
         
@@ -238,6 +241,11 @@ def csv_from_excel(path, file):
         temp.append([cell.value for cell in r])
     
     df = pd.DataFrame(np.array(temp[1:]), columns = temp[0])
+    fcols = df.select_dtypes('float').columns
+    icols = df.select_dtypes('integer').columns
+
+    df[fcols] = df[fcols].apply(pd.to_numeric, downcast='float')
+    df[icols] = df[icols].apply(pd.to_numeric, downcast='integer')
     df.set_index("인덱스").to_pickle(f'{path}{name}.pkl')
 # runs the csv_from_excel function:
 
@@ -299,7 +307,7 @@ def main(year_path):
         electrode = electrode.lower()
         done2 =  False
         while not done2:
-            cutoff = input("type cutoff voltage for each cycle (anode-> top, cathode -> bottom): ")
+            cutoff = input("type cutoff voltage for each cycle (anode-> top, cathode (or full cell) -> bottom): ")
             if cutoff[0].isnumeric():
                 done2 = True
             else:
@@ -333,7 +341,7 @@ def main(year_path):
    
 
 if __name__ == "__main__":
-    year_path = get_data_folder(Path(sys.argv[0]).name)
+    # year_path = get_data_folder(Path(sys.argv[0]).name)
     main(year_path)
     
     

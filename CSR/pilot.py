@@ -1,12 +1,11 @@
 
-
-import numpy as np
-import matplotlib.pyplot as plt
+import pandas as pd
 
 
-x = np.linspace(0, 100)
-y = np.linspace(0, 100)
 
-plt.plot(x, y)
-plt.savefig("test.png")
-plt.show()
+
+file = r"D:\Researcher\JYCheon\DATA\Electrochemistry\2022\Raw\1019 NCMLTO PVDF press summary\GB\output\Capacity_tot.pkl"
+
+file2 = r"D:\Researcher\JYCheon\DATA\Electrochemistry\2022\Raw\1019 NCMLTO PVDF press summary\tape\output\GCD_tot.pkl"
+
+df = pd.read_pickle(file2)

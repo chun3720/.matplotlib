@@ -74,3 +74,17 @@ xl_file = "path_ref.xlsx"
 # df2.to_pickle(pkl_path)
 
 df = pd.read_pickle(pkl_path)
+
+
+origin_path = mother_path.joinpath("OriginPro")
+
+info = {"python_name": ["originpro"],
+        "path_name" : [origin_path]}
+
+df3 = pd.DataFrame(info)
+df3 = df3.set_index("python_name")
+df3.to_pickle(origin_path.joinpath("origin_path.pkl"))
+
+# =============================================================================
+# asdfasdf
+# =============================================================================

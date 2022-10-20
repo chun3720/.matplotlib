@@ -155,9 +155,10 @@ def get_data_folder(py_name):
         
         year_path = Path(GUI_load())
         
-        info = {"python_name": [f"{py_name}", "Capacity_norm_op", "Capacity_specific_op"],
-                "path_name" : [year_path, "", ""],
-                "op" : ["", "", ""]}
+        info = {"python_name": [f"{py_name}", "Capacity_norm_op", "Capacity_specific_op"
+                                , "originpro"],
+                "path_name" : [year_path, "", "", mother_path.joinpath("OriginPro")],
+                "op" : ["", "", "", ""]}
         
         df = pd.DataFrame(info)
         df = df.set_index("python_name")
