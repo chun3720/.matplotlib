@@ -39,7 +39,10 @@ def runCSR(direct = False):
     
     selector = input("which file want to run: ")
     chosen = int(selector)
-    year_path = get_data_folder(code_dict[chosen]) 
+    
+    
+    year_path = get_data_folder(code_dict[chosen]) if code_dict[chosen] not in \
+        ["Set_path.py", "Export_path.py"] else path
     to_import, ext = os.path.splitext(code_dict[chosen])
     
     # package_to_load = f'ForMatplotlib.{to_import}'

@@ -186,6 +186,14 @@ def get_result(path, exp, k=None):
         print('==========================================')       
     print('\nDone!\n')   
 
+
+def get_capacity_df(exp_obj):
+    return pd.concat([exp_obj.negative.reset_index(drop = True)
+               , exp_obj.positive.reset_index(drop = True)], axis = 1)
+    
+
+
+
 def get_export(path, exp_obj, k=None):
     output_path = os.path.join(path, 'output\\')
     # output_path = self.path + 'output\\'
@@ -195,31 +203,41 @@ def get_export(path, exp_obj, k=None):
     n = len(exp_obj)
     numbering = range(k-1, n, k)
     for num, b in zip(numbering, exp_obj):
-        with pd.ExcelWriter(f'{output_path}{exp_obj[num].name}_corrected.xlsx') as writer:
-        # with pd.ExcelWriter(output_path + exp[a].get_name() + '_corrected.xlsx') as writer:
-            (
-                pd.concat([exp_obj[num].negative.reset_index(drop = True)
-                           ,exp_obj[num].positive.reset_index(drop = True)]
-                           ,axis = 1, ignore_index = True)
-                           .to_excel(writer, index = False
-                                     ,header = ["negative (Ah/g)","V1", "positive (Ah/g)", "V2"])
+        # with pd.ExcelWriter(f'{output_path}{exp_obj[num].name}_corrected.xlsx') as writer:
+        # # with pd.ExcelWriter(output_path + exp[a].get_name() + '_corrected.xlsx') as writer:
+        #     (
+        #         pd.concat([exp_obj[num].negative.reset_index(drop = True)
+        #                    ,exp_obj[num].positive.reset_index(drop = True)]
+        #                    ,axis = 1, ignore_index = True)
+        #                    .to_excel(writer, index = False
+        #                              ,header = ["negative (Ah/g)","V1", "positive (Ah/g)", "V2"])
                     
-                )       
+        #         )       
         GCDs.append(exp_obj[num])
-        
+    
+    pkl_file = f'{output_path}total.pkl'
     with pd.ExcelWriter(f'{output_path}total.xlsx') as writer:
         num = len(GCDs)
         progress_bar(0, num)
+        tot_df = pd.DataFrame()
+        header_tot = []
         for ix, gcd in enumerate(GCDs):
-            
+            header = [f"negative_{ix}", f"V_{ix}", f"positive_{ix}", gcd.name]
+            cap_df = get_capacity_df(gcd)
             (
-                pd.concat([gcd.negative.reset_index(drop = True)
-                           , gcd.positive.reset_index(drop = True)], axis = 1)
+                # pd.concat([gcd.negative.reset_index(drop = True)
+                #            , gcd.positive.reset_index(drop = True)], axis = 1)
+                cap_df
                 .to_excel(writer, startcol = 4*ix, index = False
-                          , header = [f"negative_{ix}", f"V_{ix}", f"positive_{ix}", gcd.name])
+                          , header = header)
                                       
                 )
+            tot_df = pd.concat([tot_df, cap_df], axis = 1, ignore_index  = True)
+            header_tot += header
             progress_bar(ix+1, num)
+        
+        tot_df.columns = header_tot
+        tot_df.to_pickle(pkl_file)
             
             
 def csv_from_excel(path, file):

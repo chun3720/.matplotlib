@@ -54,37 +54,13 @@ class Wonatech_tot(Dataloads):
 #     main()
 
 
+
 path = Path(os.getcwd())
 
 path_ref = "path_ref.pkl"
-
+xl_ref = "path_ref.xlsx"
 
 pkl_path = path.parent.parent.joinpath(path_ref)
-
-
-
-mother_path = path.parent.parent
-
-xl_file = "path_ref.xlsx"
-
-
-
-# df2 = pd.read_excel(mother_path.joinpath(xl_file), index_col = 0)
-
-# df2.to_pickle(pkl_path)
+xl_path = path.parent.parent.joinpath(xl_ref)
 
 df = pd.read_pickle(pkl_path)
-
-
-origin_path = mother_path.joinpath("OriginPro")
-
-info = {"python_name": ["originpro"],
-        "path_name" : [origin_path]}
-
-df3 = pd.DataFrame(info)
-df3 = df3.set_index("python_name")
-df3.to_pickle(origin_path.joinpath("origin_path.pkl"))
-
-# =============================================================================
-# asdfasdf
-# =============================================================================
