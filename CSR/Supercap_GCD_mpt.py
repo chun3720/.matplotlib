@@ -5,13 +5,12 @@ Created on Thu Apr 14 14:36:11 2022
 @author: user
 """
 
-from loadexp import fileloads, build_data, Dataloads, progress_bar, GUI_load, get_data_folder
+from loadexp import fileloads, build_data, Dataloads, progress_bar
 import pandas as pd
-import os, sys
+import os, re
 from matplotlib import pyplot as plt
 import numpy as np
 import seaborn as sns
-import re
 from pathlib import Path
 
 # import shutil

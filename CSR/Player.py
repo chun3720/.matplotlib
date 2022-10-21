@@ -20,7 +20,7 @@ def runCSR(direct = False):
     child_path = os.path.join(path, "CSR")
     
     
-    if str(parent_path) not in sys.path:
+    if str(parent_path) not in sys.path: 
         sys.path.append(str(parent_path))
         sys.path.append(path)
     

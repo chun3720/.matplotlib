@@ -9,6 +9,7 @@ import os
 from dataclasses import dataclass
 from typing import List
 from pathlib import Path
+import PySimpleGUI as sg
 import pandas as pd
 
 
@@ -54,7 +55,7 @@ def raw_check(path: str, file_ext: str) -> List:
         # else:
         return check_true
 
-def fileloads(year_path: str, file_ext: str) -> List:  
+def fileloads(year_path: str, file_ext: str) -> List[str]:  
     year_dict = path_gen(year_path)
     folder_select = input("Select folder to analyze, (move to parent path: type(.):  ")
     
@@ -98,8 +99,6 @@ def progress_bar(progress: int, total: int) -> None:
         
 
 def GUI_load():
-    import PySimpleGUI as sg
-
     dir_path = sg.popup_get_folder("Select Folder")
     if not dir_path:
         sg.popup("Cancel", "No folder selected")
