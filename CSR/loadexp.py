@@ -19,9 +19,6 @@ def path_gen(path: str, file_ext: str = None) -> str:
     print(path)
     print('--------------------------------------------------------------------------------------')
     
-    
-    # path_folder = os.listdir(path)
-    
     if file_ext is not None:
 
         path_folder = [_ for _ in os.listdir(path) if _.endswith(file_ext)]

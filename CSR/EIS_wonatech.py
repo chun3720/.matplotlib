@@ -19,6 +19,10 @@ import csv
 plt.style.use(['science', 'no-latex'])
 year_path  = "D:\\Researcher\\JYCheon\\DATA\\Electrochemistry\\EIS"
 
+
+axis = 1000
+
+
 class EIS_tot(Dataloads):
     def __init__(self, path, file):
         Dataloads.__init__(self, path, file)
@@ -70,11 +74,11 @@ def raw_plot(path, obj_list):
              
              )
 
-    leg = plt.legend(fontsize = 8)
+    leg = plt.legend(fontsize = "xx-small")
     for line, text in zip(leg.get_lines(), leg.get_texts()):
         text.set_color(line.get_color())
-    plt.xlim(0, 300)
-    plt.ylim(0, 300)
+    plt.xlim(0, axis)
+    plt.ylim(0, axis)
     plt.xlabel("$Z'[Ohms]$", fontsize = 12)
     plt.ylabel("$-Z''[Ohms]$", fontsize = 12)
     plt.show()

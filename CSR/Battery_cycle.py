@@ -4,15 +4,14 @@ Created on Wed Mar 24 09:06:16 2021
 last update : Feb 15 2022
 @author: jycheon
 """
-from loadexp import Dataloads, fileloads, build_data, get_data_folder
+from loadexp import Dataloads, fileloads, build_data
 import pandas as pd
 import os
 from matplotlib import pyplot as plt
 
-# plt.style.use(['science', 'grid'])
 plt.style.use(['science', 'no-latex'])
 year_path = r"D:\Researcher\JYCheon\DATA\Electrochemistry\Coin cell\2022"
-# year_path = "C:\\Users\\jycheon\\Documents\\Dummy"
+
 
 
 class LIB_tot(Dataloads):
@@ -20,9 +19,7 @@ class LIB_tot(Dataloads):
     def __init__(self, path, file):
         Dataloads.__init__(self, path, file)
         self.data = pd.read_excel(self.file_path, sheet_name = '데이터_1_1', names = ["cycle number", "Capacity"])
-        # self.data.columns = ["cycle number", "Capacity"]
         self.unit = "(Ah/g)"
-        # self.X, self.Y = self.data.columns[0]
         self.x, self.y  = self.data.columns
         self.X = self.data[self.x]
         self.Y = self.data[self.y]
@@ -105,7 +102,6 @@ def get_export(exp, path, check = 'n', convertor = 'n'):
 
 def cycle_plt(exp):
     
-    # for i in range(len(exp)):
     for ex in exp:
         name = ex.name.replace("_", "-")
         plt.plot(ex.X, ex.Y, 'o', label = name)
@@ -120,11 +116,10 @@ def main(py_path):
     exp_data = build_data(path, raw, LIB_tot)
     
     cycle_plt(exp_data)
-    # cycle_sns(exp_data)
-    check = input("convert to mAh/g? yes (y) or no(n) :")
-    convertor  = input("want to recalculate ? yes (y) or no(n) :")
+    check = input("convert to mAh/g? yes (y) or no (n) :")
+    convertor  = input("want to recalculate ? yes (y) or no (n) :")
     
-    get_export(exp_data, path, check, convertor)
+    get_export(exp_data, path, check.lower(), convertor.lower())
     
 if __name__ == "__main__":
     main(year_path)
