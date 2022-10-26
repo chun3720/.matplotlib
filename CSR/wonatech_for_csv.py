@@ -10,7 +10,7 @@ import os
 import numpy as np
 from matplotlib import pyplot as plt
 from pathlib import Path
-from tqdm import tqdm
+
 
 # plt.style.use('science')
 plt.style.use(['science', 'no-latex'])
@@ -108,33 +108,56 @@ def get_export(path, exp_obj):
     
     tot_df.columns = header_tot
     tot_df.to_pickle(tot_pkl)
+    
+
+def get_tot_plot(exp_obj):
+    color_list = ['k', 'r', 'tab:orange', 'g', 'b', 'purple', 'dimgrey', 'hotpink', 'steelblue', 'mediumseagreen', 'm']
+    
+    for i, exp in enumerate(exp_obj):
+        exp.get_GCD()
+        exp.get_curve(color_list[i%len(color_list)])
+    
+    plt.xlabel("Specific Capacity (Ah/g)")
+    plt.ylabel("Potential (V vs. Li/Li$^+$)")
+    
 
 
-def main(date_path = year_path):
-    check = input("whcih file to anlyais? raw (r) or each cycle (c)? ")      
 
+def main(date_path = year_path, direct = False):
+    
+    if not direct:
+        check = input("whcih file to anlyais? raw (r) or each cycle (c)? ")
+    
+    else:
+        check = "r"
+    
     if check.lower() == "r":
-
-        raw, path, _, _ = fileloads(year_path, "csv")
+        if not direct:
+            raw, path, _, _ = fileloads(date_path, "csv")
+        
+        else:
+            raw = [_ for _ in os.listdir(date_path)]
+            path = date_path
         profile = [_ for _ in raw if os.path.splitext(_)[0].endswith("DC")]
         cycle = [_ for _ in raw if os.path.splitext(_)[0].endswith("CYC")] 
-        
-        
+               
         exp_obj = build_data(path, profile, LIB_tot)
         cyc_obj = build_data(path, cycle, LIB_cyc)
         exp_obj[0].get_separation(cyc_obj[0].raw.mass.iloc[0])
+        
+        split_path = os.path.join(path, "split")
+        
+        pqt_files = [_ for _ in os.listdir(split_path)]
+        data_obj = build_data(split_path, pqt_files, LIB_sep)
+                              
+        get_tot_plot(data_obj)
+        
+
+        
     else:
-        raw, path, _, _ = fileloads(year_path, "pqt")
+        raw, path, _, _ = fileloads(date_path, "pqt")
         exp_obj = build_data(path, raw, LIB_sep)
-        color_list = ['k', 'r', 'tab:orange', 'g', 'b', 'purple', 'dimgrey', 'hotpink', 'steelblue', 'mediumseagreen', 'm']
-        
-        for i, exp in enumerate(exp_obj):
-            exp.get_GCD()
-            exp.get_curve(color_list[i%len(color_list)])
-        
-        plt.xlabel("Specific Capacity (Ah/g)")
-        plt.ylabel("Potential (V vs. Li/Li$^+$")
-        
+        get_tot_plot(exp_obj)
         get_export(path, exp_obj)
         
 if __name__ == "__main__":
