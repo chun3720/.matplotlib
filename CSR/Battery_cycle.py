@@ -18,7 +18,7 @@ class LIB_tot(Dataloads):
     # df_list = []
     def __init__(self, path, file):
         Dataloads.__init__(self, path, file)
-        self.data = pd.read_excel(self.file_path, sheet_name = '데이터_1_1', names = ["cycle number", "Capacity"])
+        self.data = pd.read_excel(self.file_path, sheet_name = 0, names = ["cycle number", "Capacity"])
         self.unit = "(Ah/g)"
         self.x, self.y  = self.data.columns
         self.X = self.data[self.x]
