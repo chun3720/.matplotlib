@@ -1,4 +1,4 @@
-from loadexp import Dataloads, fileloads, build_data
+# from loadexp import Dataloads, fileloads, build_data
 import pandas as pd
 import os
 import numpy as np
@@ -16,8 +16,8 @@ b = date.isoformat(a)
 c = b.replace("-", "")
 
 
-n = 18
 
-for i in range(2, n, 3):
-    
-    print(i)
+file = r"D:\Researcher\JYCheon\DATA\Electrochemistry\Coin cell\2022\1027 newenw\1012_NCMLTO_PVDF_activation_077\split\cycle_2.pqt"
+
+
+path = Path(file)

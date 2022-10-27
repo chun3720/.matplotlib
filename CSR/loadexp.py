@@ -112,8 +112,13 @@ class Dataloads:
     file : str 
     
     def __post_init__(self):
-        self.file_path = os.path.join(self.path, self.file)
-        self.name, self.ext = os.path.splitext(self.file)
+        self.path_obj = Path(self.path)
+        
+        self.file_path = self.path_obj.joinpath(self.file)
+        self.name, self.ext = os.path.splitext(self.file_path.name)
+        
+        # self.file_path = os.path.join(self.path, self.file)
+        # self.name, self.ext = os.path.splitext(self.file)
         
 def build_data(path: str, file: List[str], builder: object) -> List[object]:
     "Build class of each file and return list of builded classes"

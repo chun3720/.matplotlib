@@ -28,10 +28,6 @@ def built_in(path_list, k):
         except:
             pass
         
-    
-
-
-
 
 def main(date_path = year_path):
     date_path = GUI_load()

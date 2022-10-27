@@ -117,10 +117,11 @@ def get_tot_plot(exp_obj, k = 1):
     nc = len(color_list)
     n = len(exp_obj)
     numbering = range(k-1, n, k)
-    
+    plot2export = []
     for i, num in enumerate(numbering):
         exp_obj[num].get_GCD()
         exp_obj[num].get_curve(color_list[i%nc]) 
+        plot2export.append(exp_obj[num])
     
     
     
@@ -131,10 +132,12 @@ def get_tot_plot(exp_obj, k = 1):
     plt.xlabel("Specific Capacity (Ah/g)")
     plt.ylabel("Potential (V vs. Li/Li$^+$)")
     
+    return plot2export
 
 
 
 def main(date_path = year_path, direct = False, k = 1):
+    date_path = Path(date_path)
     
     if not direct:
         check = input("whcih file to anlyais? raw (r) or each cycle (c)? ")
@@ -158,13 +161,19 @@ def main(date_path = year_path, direct = False, k = 1):
         
         split_path = os.path.join(path, "split")
         
-        pqt_files = [_ for _ in os.listdir(split_path) if _.endswith("pqt")]
-        data_obj = build_data(split_path, pqt_files, LIB_sep)
+        test = Path(split_path)
+        
+        test_files = [_ for _ in test.iterdir() if _.name.endswith("pqt")]
+        test_sorted = sorted(test_files, key = os.path.getmtime)
+        sep_files = [_.name for _ in test_sorted]
+        data_obj = build_data(split_path, sep_files, LIB_sep)
         
         if not direct:
             check = input("type split basis (default value is 1):  ")
             k = int(check) if check else 1
-        get_tot_plot(data_obj, k)
+        to_export  = get_tot_plot(data_obj, k)
+        
+        get_export(os.path.join(path,"split"), to_export)
         
 
         
