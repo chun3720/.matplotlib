@@ -16,7 +16,7 @@ year_path = r"D:\Researcher\JYCheon\DATA\Electrochemistry\Coin cell\2022"
 # path = GUI_load()
 
 
-def built_in(path_list):
+def built_in(path_list, k):
     curr_path = Path(os.getcwd())
     sys.path.append(curr_path.name)
     
@@ -24,7 +24,7 @@ def built_in(path_list):
     
     for path in path_list:
         try:
-            module.main(path, True)
+            module.main(path, True, k)
         except:
             pass
         
@@ -53,13 +53,12 @@ def main(date_path = year_path):
         dc.rename(child_path/dc.name)
         cyc.rename(child_path/cyc.name)
     
-    built_in(sub_paths)
+    check = input("type split basis (default value is 1):  ")
     
+    k = int(check) if check else 1
     
+    built_in(sub_paths, k)
     
-    
-    
-
 
 
 if __name__ == "__main__":
