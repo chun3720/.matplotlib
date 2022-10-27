@@ -51,9 +51,9 @@ class LIB_tot(Dataloads):
             idx.append(j)
             caps.append(cy.cap.loc[dc_point])
             
-        d = {"Cycle": idx, "Capacity (Ah/g)" : np.array(caps)}
+        d = {"Cycle": idx, "Specific Capacity (Ah/g)" : np.array(caps)}
         df1 = pd.DataFrame(data = d, index = idx)      
-        df1.plot(x = "Cycle", y = "Capacity (Ah/g)", kind = "scatter")
+        df1.plot(x = "Cycle", y = "Specific Capacity (Ah/g)", kind = "scatter")
         plt.show()
         
         cycle_path = (
