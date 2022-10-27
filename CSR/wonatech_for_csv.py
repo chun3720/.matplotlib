@@ -161,6 +161,7 @@ def main(date_path = year_path, direct = False):
         get_export(path, exp_obj)
         
 if __name__ == "__main__":
+    
     main(year_path)
 
 # check = input("whcih file to anlyais? raw (r) or each cycle (c)? ")      

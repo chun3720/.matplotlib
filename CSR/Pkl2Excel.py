@@ -6,7 +6,7 @@ Created on Mon Oct 24 09:49:47 2022
 """
 
 import pandas as pd
-from loadexp import Dataloads, fileloads, build_data, GUI_load
+from loadexp import Dataloads, build_data, GUI_load
 import os
 from tqdm import tqdm
 # import xlsxwriter
@@ -48,8 +48,10 @@ def get_conversion(objs):
 def main(date_path = year_path):
 
     date_path = GUI_load()
-    raw_list, path_dir, exp_name, exp_title = fileloads(date_path, '.pkl')
-    exp_obj = build_data(path_dir, raw_list, Pkl2Xl)   
+    # raw_list, path_dir, exp_name, exp_title = fileloads(date_path, '.pkl')
+    
+    raw_list = [_ for _ in os.listdir(date_path) if _.endswith("pkl")]
+    exp_obj = build_data(date_path, raw_list, Pkl2Xl)   
     get_conversion(exp_obj)
     
 

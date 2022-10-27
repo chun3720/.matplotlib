@@ -15,13 +15,9 @@ b = date.isoformat(a)
 
 c = b.replace("-", "")
 
-year_path = "D:\\Researcher\\JYCheon\\DATA\\Electrochemistry\\Coin cell\\2022"
 
+n = 18
 
-f = r"D:\Researcher\JYCheon\DATA\Electrochemistry\Coin cell\2022\1025 csv test\New Folder\output\cycle_1.pkl"
-
-path, file = os.path.split(f)
-
-
-
-df = pd.read_pickle(f)
+for i in range(2, n, 3):
+    
+    print(i)

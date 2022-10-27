@@ -23,7 +23,10 @@ def built_in(path_list):
     module = importlib.import_module("wonatech_for_csv")
     
     for path in path_list:
-        module.main(path, True)
+        try:
+            module.main(path, True)
+        except:
+            pass
         
     
 
