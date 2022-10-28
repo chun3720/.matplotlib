@@ -29,7 +29,8 @@ def runCSR(direct = False):
         code_list = [_ for _ in os.listdir(path) if _.endswith(".py")]
     else:
         code_list = [_ for _ in os.listdir(child_path) if _.endswith(".py")]
-    to_ignore = ["__init__.py", "loadexp.py", "Player.py", "Battery_GCDplot_old.py", "__main__.py"]
+    to_ignore = ["__init__.py", "loadexp.py", "Player.py", "Battery_GCDplot_old.py", "__main__.py", \
+                 "pilot.py", "separator_wonatech.py", "bat_ex.py", "EC_EIS.py", "mover.py"]
     codes = [_ for _ in code_list if _ not in to_ignore]    
     # code_dict = {i:code for i, code in enumerate(codes)}
     code_dict = dict(enumerate(codes))

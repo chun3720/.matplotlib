@@ -4,12 +4,12 @@ Created on Tue Oct 25 13:28:27 2022
 
 @author: user
 """
-from loadexp import Dataloads, fileloads, build_data
-import pandas as pd
+from pathlib import Path
 import os
+import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
-from pathlib import Path
+from loadexp import Dataloads, fileloads, build_data
 
 
 # plt.style.use('science')
@@ -54,6 +54,7 @@ class LIB_tot(Dataloads):
         d = {"Cycle": idx, "Specific Capacity (Ah/g)" : np.array(caps)}
         df1 = pd.DataFrame(data = d, index = idx)      
         df1.plot(x = "Cycle", y = "Specific Capacity (Ah/g)", kind = "scatter")
+        plt.title(f"{self.name}", fontsize = 8)
         plt.show()
         
         cycle_path = (
@@ -67,6 +68,8 @@ class LIB_tot(Dataloads):
         target_file = cycle_path.joinpath(f'{self.name}_cycle.xlsx')
         
         df1.to_excel(target_file)
+        
+        return self.name
             
             
 class LIB_sep(Dataloads):
@@ -110,7 +113,7 @@ def get_export(path, exp_obj):
     tot_df.to_pickle(tot_pkl)
     
 
-def get_tot_plot(exp_obj, k = 1):
+def get_tot_plot(exp_obj, title, k = 1):
     color_list = ['k', 'r', 'tab:orange', 'g', 'b', 'purple', 'dimgrey', 'hotpink', 'steelblue', 'mediumseagreen', 'm']
     
     
@@ -122,15 +125,14 @@ def get_tot_plot(exp_obj, k = 1):
         exp_obj[num].get_GCD()
         exp_obj[num].get_curve(color_list[i%nc]) 
         plot2export.append(exp_obj[num])
-    
-    
-    
+
     # for i, exp in enumerate(exp_obj):
     #     exp.get_GCD()
     #     exp.get_curve(color_list[i%len(color_list)])
     
     plt.xlabel("Specific Capacity (Ah/g)")
     plt.ylabel("Potential (V vs. Li/Li$^+$)")
+    plt.title(title, fontsize = 8)
     
     return plot2export
 
@@ -150,14 +152,14 @@ def main(date_path = year_path, direct = False, k = 1):
             raw, path, _, _ = fileloads(date_path, "csv")
         
         else:
-            raw = [_ for _ in os.listdir(date_path)]
+            raw = [_ for _ in os.listdir(date_path) if _.endswith("csv")]
             path = date_path
         profile = [_ for _ in raw if os.path.splitext(_)[0].endswith("DC")]
         cycle = [_ for _ in raw if os.path.splitext(_)[0].endswith("CYC")] 
                
         exp_obj = build_data(path, profile, LIB_tot)
         cyc_obj = build_data(path, cycle, LIB_cyc)
-        exp_obj[0].get_separation(cyc_obj[0].raw.mass.iloc[0])
+        exp_title = exp_obj[0].get_separation(cyc_obj[0].raw.mass.iloc[0])
         
         split_path = os.path.join(path, "split")
         
@@ -171,7 +173,7 @@ def main(date_path = year_path, direct = False, k = 1):
         if not direct:
             check = input("type split basis (default value is 1):  ")
             k = int(check) if check else 1
-        to_export  = get_tot_plot(data_obj, k)
+        to_export  = get_tot_plot(data_obj, exp_title, k)
         
         get_export(os.path.join(path,"split"), to_export)
         
@@ -186,29 +188,4 @@ def main(date_path = year_path, direct = False, k = 1):
 if __name__ == "__main__":
     
     main(year_path)
-
-# check = input("whcih file to anlyais? raw (r) or each cycle (c)? ")      
-
-# if check.lower() == "r":
-
-#     raw, path, _, _ = fileloads(year_path, "csv")
-#     profile = [_ for _ in raw if os.path.splitext(_)[0].endswith("DC")]
-#     cycle = [_ for _ in raw if os.path.splitext(_)[0].endswith("CYC")] 
     
-    
-#     exp_obj = build_data(path, profile, LIB_tot)
-#     cyc_obj = build_data(path, cycle, LIB_cyc)
-#     exp_obj[0].get_separation(cyc_obj[0].raw.mass.iloc[0])
-# else:
-#     raw, path, _, _ = fileloads(year_path, "pqt")
-#     exp_obj = build_data(path, raw, LIB_sep)
-#     color_list = ['k', 'r', 'tab:orange', 'g', 'b', 'purple', 'dimgrey', 'hotpink', 'steelblue', 'mediumseagreen', 'm']
-    
-#     for i, exp in enumerate(exp_obj):
-#         exp.get_GCD()
-#         exp.get_curve(color_list[i%len(color_list)])
-    
-#     plt.xlabel("Specific Capacity (Ah/g)")
-#     plt.ylabel("Potential (V vs. Li/Li$^+$")
-    
-#     get_export(path, exp_obj)

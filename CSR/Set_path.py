@@ -35,8 +35,8 @@ def main(year_path):
     
     df.path_name = df.path_name.apply(lambda x: convertor(x))
     
-    
-    df.to_pickle(pkl_path)
+    df.fillna(0).to_pickle(pkl_path)
+    # df.to_pickle(pkl_path)
     
 
 if __name__ == "__main__":
