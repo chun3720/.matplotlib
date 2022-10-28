@@ -256,8 +256,7 @@ def get_export(exp, path):
     if not os.path.exists(output_path):
         os.mkdir(output_path)    
     
-    GCDs = []
-    CVs = []
+    GCDs, CVs = [], []
     for item in exp:
         if item.method == "GCD":
             GCDs.append(item)
@@ -266,62 +265,44 @@ def get_export(exp, path):
             CVs.append(item)
     
     GCD_list, cap_list, cap_unit, Is_list = [] , [], [], []   
+     
+    gcd_pkl_file = f'{output_path}\\GCD_tot.pkl' 
+    cap_pkl_file = f'{output_path}\\Capacity_tot.pkl'    
+
+    n= len(GCDs)
     
-    for gcd in GCDs:
+    gcd_tot_df = pd.DataFrame()
+    gcd_header_tot = []
+    
+    cap_tot_df = pd.DataFrame()
+    cap_header_tot = []
+    for i, gcd in enumerate(GCDs):
+        gcd_cols = ["time/s", "<Ewe>/V"]
+        gcd_header = [f"time_{i}", gcd.name]
+        gcd_header_tot += gcd_header
+        gcd_tot_df = pd.concat([gcd_tot_df, gcd.df[gcd_cols]], axis = 1, ignore_index = True)
+        
+        
+        cap_cols = ["Capacity/mA.h", "<Ewe>/V"]
+        cap_header = [ f'Charge_{i}', f'V_{i}', f'Discharge_{i}',gcd.name ]
+        capacity_df = get_capacity_tot(gcd, cap_cols)
+        cap_header_tot += cap_header
+        cap_tot_df = pd.concat([cap_tot_df, capacity_df], axis = 1, ignore_index = True)
+        
+        
         GCD_list.append(gcd.name)
         Is_list.append(gcd.get_condition())
         cap_list.append(round(gcd.cap_result, 2))
         cap_unit.append(gcd.cap_unit)
+        
+    gcd_tot_df.columns = gcd_header_tot
+    gcd_tot_df.to_pickle(gcd_pkl_file)   
+    cap_tot_df.columns = cap_header_tot
+    cap_tot_df.to_pickle(cap_pkl_file)
+    
     
     d = {"Capacitance (I*dt/dV)": cap_list, "unit": cap_unit, "Current": Is_list}
-    df1 = pd.DataFrame(data = d, index = GCD_list)
-    
-    gcd_pkl_file = f'{output_path}\\GCD_tot.pkl'    
-    # gcd_tot_xl = f'{output_path}\\GCD_tot.xlsx'
-    # with pd.ExcelWriter(f'{output_path}\\GCD_tot.xlsx') as writer:
-    n= len(GCDs)
-    progress_bar(0, n)
-    gcd_tot_df = pd.DataFrame()
-    gcd_header_tot = []
-    for i, gcd in enumerate(GCDs):
-        cols = ["time/s", "<Ewe>/V"]
-        header = [f"time_{i}", gcd.name]
-        # (
-        #  gcd.df[cols]
-        #   .to_excel(writer, startcol = 2*i, index = False, header = header)
-         
-        #  )
-        gcd_header_tot += header
-        gcd_tot_df = pd.concat([gcd_tot_df, gcd.df[cols]], axis = 1, ignore_index = True)
-        progress_bar(i+1, n)
-        gcd_tot_df.columns = gcd_header_tot
-        gcd_tot_df.to_pickle(gcd_pkl_file)
-        # df1.to_excel(writer, sheet_name = 'Summary')
-        
-    pkl_file = f'{output_path}\\Capacity_tot.pkl'    
-    capacity_xl = f'{output_path}\\Capacity_tot.xlsx'
-    # with pd.ExcelWriter(f'{output_path}\\Capacity_tot.xlsx') as writer:
-        
-    n= len(GCDs)
-    progress_bar(0, n)
-    tot_df = pd.DataFrame()
-    header_tot = []
-    for i, gcd in enumerate(GCDs):
-        
-        cols = ["Capacity/mA.h", "<Ewe>/V"]
-        header = [ f'Charge_{i}', f'V_{i}', f'Discharge_{i}',gcd.name ]
-        capacity_df = get_capacity_tot(gcd, cols)
-        # (
-        #     capacity_df
-        #     .to_excel(writer, startcol = 4*i, index = False, header = header)
-        #     )
-        header_tot += header
-        tot_df = pd.concat([tot_df, capacity_df], axis = 1, ignore_index = True)
-        progress_bar(i+1, n)
-    
-    tot_df.columns = header_tot
-    tot_df.to_pickle(pkl_file)
-    # tot_df.to_excel(capacity_xl, index = False)
+    df1 = pd.DataFrame(data = d, index = GCD_list)    
 
     if CVs:
         
@@ -395,19 +376,7 @@ def main(py_path):
     
     
 if __name__ == "__main__":
-    plt.style.use(['science', 'no-latex'])
+    # plt.style.use(['science', 'no-latex'])
+
     
     main(year_path)
-
-
-# for test
-# raw_list, path, _, _ = fileloads(year_path, '.mpt')
-# exp_obj = build_data(path, raw_list, EC_measurement)
-
-# for exp in exp_obj:
-#     exp.get_calculation()
-#     exp.get_plot(path)
-#     exp.get_drop()
-    
-# get_multiplot(exp_obj, path)
-# get_export(exp_obj, path)

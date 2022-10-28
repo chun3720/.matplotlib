@@ -54,12 +54,20 @@ def raw_check(path: str, file_ext: str) -> List:
 
 def fileloads(year_path: str, file_ext: str) -> List[str]:  
     year_dict = path_gen(year_path)
-    folder_select = input("Select folder to analyze, (move to parent path: type(.):  ")
-    
-    if not folder_select:
-        raise SystemExit("Cancelling: no folder selected")
+    done = False
+    while not done:
         
-    elif folder_select == ".":
+        folder_select = input("Select folder to analyze, (move to parent path: type(.):  ")
+        
+        if folder_select.isnumeric() or folder_select == ".":
+            done = True
+            
+        print("Invalid input! retry")
+        
+    # if not folder_select:
+    #     raise SystemExit("Cancelling: no folder selected")
+        
+    if folder_select == ".":
         parent_path = Path(year_path).parent
         
         return fileloads(parent_path, file_ext)
