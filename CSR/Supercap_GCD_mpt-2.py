@@ -53,7 +53,17 @@ class EC_measurement(Dataloads):
             h = re.findall('[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?', lines[1])
 
         self.header = int(h[0])     
-        self.df = pd.read_csv(self.file_path, skiprows = self.header-1, sep = '\t', header = 0)
+        
+        if self.method == "GCD":
+            self.df = pd.read_csv(self.file_path, skiprows = self.header-1, sep = "\t", header = 0\
+                                  , usecols = ["time/s", "control/mA", '<Ewe>/V', 'Capacity/mA.h', 'cycle number' ])
+        
+        elif self.method == "CV":
+            self.df = pd.read_csv(self.file_path, skiprows = self.header-1, sep = "\t", header = 0\
+                                  , usecols = ["time/s", "control/V", "Ewe/V", "<I>/mA", "cycle number"])
+            
+    
+        # self.df = pd.read_csv(self.file_path, skiprows = self.header-1, sep = '\t', header = 0)
         
         check = self.df["cycle number"].value_counts().to_dict()
         _check = sorted(list(check.keys()))
@@ -69,7 +79,7 @@ class EC_measurement(Dataloads):
             self.name = self.name[:-2]
 
         if self.method == 'GCD':            
-            self.df.drop(columns = ['mode', 'ox/red', 'error', 'Ns changes','counter inc.', 'P/W'], inplace = True)
+            # self.df.drop(columns = ['mode', 'ox/red', 'error', 'Ns changes','counter inc.', 'P/W'], inplace = True)
             self.appl_current = self.df["control/mA"].loc[0]
             self.appl_unit = self.df.columns[2].split("/")[1]
             self.cap_result = 0
@@ -92,7 +102,7 @@ class EC_measurement(Dataloads):
                 
             
         elif self.method == 'CV':
-            self.df.drop(columns = ['mode', 'ox/red', 'error', 'counter inc.', 'P/W'], inplace = True)
+            # self.df.drop(columns = ['mode', 'ox/red', 'error', 'counter inc.', 'P/W'], inplace = True)
             t1, v1 = self.df[["time/s", "control/V"]].loc[1]
             t2, v2 = self.df[["time/s", "control/V"]].loc[2]
             
@@ -367,7 +377,7 @@ def main(py_path):
     raw_list, path, _, _ = fileloads(py_path, '.mpt')
     exp_obj = build_data(path, raw_list, EC_measurement)
     for exp in exp_obj:
-        print(exp.df.columns)
+        # print(exp.df.columns)
         exp.get_calculation()
         # exp.get_plot(path)
         # exp.get_drop()
