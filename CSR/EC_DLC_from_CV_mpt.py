@@ -116,7 +116,7 @@ def get_DLCplot(path, exp_obj, exp_name):
     
 def get_export(path, exp_obj, dlc_df, exp_name):
     
-    
+    dlc_df = dlc_df.sort_index()
     output_path = os.path.join(path, "output\\")
     if not os.path.exists(output_path):
         os.mkdir(output_path)
@@ -145,26 +145,26 @@ def get_export(path, exp_obj, dlc_df, exp_name):
             
     else:
         df = pd.read_excel(summary_file)
+        
         max_col = len(df.columns)
         header = [f"{exp_name}_raw", f"{exp_name}_fit"]
         if header[0] in df.columns:
             print()
             check = input(f"Data for <{exp_name}> is already exist. Do you want to replace? yes (y) or no (n): ")
             
-            
-        if check.lower() == "y":
-            
-            with pd.ExcelWriter(summary_file, mode = "a", engine= "openpyxl", if_sheet_exists="overlay") as writer:
-                dlc_df[cols[:2]].to_excel(writer, startcol = max_col-3, header = header)
+        
+            if check.lower() == "y":
+                
+                with pd.ExcelWriter(summary_file, mode = "a", engine= "openpyxl", if_sheet_exists="overlay") as writer:
+                    dlc_df[cols[:2]].to_excel(writer, startcol = max_col-3, header = header)
         else:
             with pd.ExcelWriter(summary_file, mode = "a", engine= "openpyxl", if_sheet_exists="overlay") as writer:
                 dlc_df[cols[:2]].to_excel(writer, startcol = max_col, header = header)
             
             
-            
 
 
-def main(py_path):
+def main(py_path =year_path):
         
     raw_list, path_dir, exp_name, exp_title = fileloads(py_path, '.mpt')
     exp_obj = build_data(path_dir, raw_list, DLC_builder)
@@ -175,3 +175,7 @@ def main(py_path):
 
 if __name__ == "__main__":
     main(year_path)
+    
+    
+# raw_list, path_dir, exp_name, exp_title = fileloads(year_path, '.mpt')
+# exp_obj = build_data(path_dir, raw_list, DLC_builder)
