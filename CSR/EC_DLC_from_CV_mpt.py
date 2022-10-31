@@ -66,9 +66,25 @@ class DLC_builder(Dataloads):
     def get_dlc_result(self):
         dlc_rs = pd.DataFrame({'Scan rate (mV/s)' : self.X, 'DLC current (mA)' : self.Y, 'Fitted (mA)' : self.slope*self.X + self.intercept})
         dlc_rs.set_index('Scan rate (mV/s)', inplace = True)
-        dlc_rs.loc[5, 'Total Capacitance (uF)'] = self.slope*1000000
-        dlc_rs.loc[5, 'Length Capacitance (uF/cm)'] = self.slope*1000000/3
-        return dlc_rs
+        # dlc_rs.loc[5, 'Total Capacitance (uF)'] = self.slope*1000000
+        # dlc_rs.loc[5, 'Length Capacitance (uF/cm)'] = self.slope*1000000/3
+        
+        dummy_index  = [99, 100, 110, 120, 130]
+        dummy_df = pd.DataFrame({"idx": dummy_index})
+        # , "tot (uF)": [self.slope* 1000000], "length (uf/cm)" : [self.slope*1000000/3]})
+        dummy_df.set_index("idx", inplace = True)
+        
+        tot_df = pd.concat([dlc_rs, dummy_df], axis = 0)
+        tot_df.loc[120, 'DLC current (mA)'] = "tot (uF)"
+        tot_df.loc[130, 'DLC current (mA)'] = round(self.slope*1000000, 1)
+        tot_df.loc[120, 'Fitted (mA)'] = "length (uF/cm)"
+        tot_df.loc[130, 'Fitted (mA)'] = round(self.slope*1000000/3, 1)
+        
+        
+        # print(tot_df)
+        
+        # return dlc_rs
+        return tot_df
     
     def dlc_plot(self):
         plt.scatter(self.X, self.Y)
@@ -147,16 +163,16 @@ def get_export(path, exp_obj, dlc_df, exp_name):
     if not summary_file.exists():
     
         with pd.ExcelWriter(summary_file) as writer:
-            dlc_df[cols[:2]].to_excel(writer, header = [f"{exp_name}_raw", f"{exp_name}_fit"])
+            dlc_df[cols[:2]].to_excel(writer, header = [f"<{mother_name}>{exp_name}_raw", f"<{mother_name}>{exp_name}_fit"])
             
     else:
         df = pd.read_excel(summary_file)
         
         max_col = len(df.columns)
-        header = [f"{exp_name}_raw", f"{exp_name}_fit"]
+        header = [f"<{mother_name}>{exp_name}_raw", f"<{mother_name}>{exp_name}_fit"]
         if header[0] in df.columns:
             print()
-            check = input(f"Data for <{exp_name}> is already exist. Do you want to replace? yes (y) or no (n): ")
+            check = input(f"Data for <{mother_name}@{exp_name}> is already exist. Do you want to replace? yes (y) or no (n): ")
             
         
             if check.lower() == "y":
