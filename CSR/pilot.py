@@ -21,3 +21,12 @@ file = r"D:\Researcher\JYCheon\DATA\Electrochemistry\Coin cell\2022\1027 newenw\
 
 
 path = Path(file)
+
+
+file2 = r"D:\Researcher\JYCheon\DATA\Electrochemistry\2022\Raw\1028 ecsa drying condition\60 VAC\1\output\60 VAC@1_summary.xlsx"
+
+
+path2 = Path(file2)
+
+
+
