@@ -182,7 +182,8 @@ def main(date_path = year_path, direct = False, k = 1):
     else:
         raw, path, _, _ = fileloads(date_path, "pqt")
         exp_obj = build_data(path, raw, LIB_sep)
-        get_tot_plot(exp_obj)
+        
+        get_tot_plot(exp_obj, "gcd")
         get_export(path, exp_obj)
         
 if __name__ == "__main__":
