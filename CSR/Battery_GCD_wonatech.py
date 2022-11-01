@@ -314,7 +314,7 @@ def main(year_path):
     #     xl.get_result(path, exp_obj)
     #     xl.get_export(path, exp_obj)
         
-    if get_input == "p" and len(raw) > 1:
+    if get_input.lower() == "p" and len(raw) > 1:
         exp_obj= build_data(path, raw, LIB_csv)
         get_plot(path, exp_obj)
         # get_result(path, exp_obj, k=1)
