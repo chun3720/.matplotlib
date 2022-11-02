@@ -286,6 +286,7 @@ def get_export(exp, path):
     
     cap_tot_df = pd.DataFrame()
     cap_header_tot = []
+    discharge_caps = []
     for i, gcd in enumerate(GCDs):
         gcd.get_calculation()
         gcd_cols = ["time/s", "<Ewe>/V"]
@@ -295,6 +296,12 @@ def get_export(exp, path):
         
         
         cap_cols = ["Capacity/mA.h", "<Ewe>/V"]
+        dc_indx = gcd.df_discharge["Capacity/mA.h"].index[-1]
+        dc_cap = gcd.df_discharge["Capacity/mA.h"].loc[dc_indx]
+        
+        discharge_caps.append(dc_cap)
+        # print(dc_cap)
+        
         cap_header = [ f'Charge_{i}', f'V_{i}', f'Discharge_{i}',gcd.name ]
         capacity_df = get_capacity_tot(gcd, cap_cols)
         cap_header_tot += cap_header
@@ -311,6 +318,15 @@ def get_export(exp, path):
     cap_tot_df.columns = cap_header_tot
     cap_tot_df.to_pickle(cap_pkl_file)
     
+    discharge_caps = np.array(discharge_caps) # mAh
+    
+    loading = 16 # mg
+    
+    dc_caps_specific = discharge_caps * 1000 / loading
+    
+    dc_caps_df = pd.DataFrame(dc_caps_specific)
+    dc_caps_df.to_csv(f"{output_path}\\cycles.csv")
+    # print(dc_caps_df)
     
     d = {"Capacitance (I*dt/dV)": cap_list, "unit": cap_unit, "Current": Is_list}
     df1 = pd.DataFrame(data = d, index = GCD_list)    

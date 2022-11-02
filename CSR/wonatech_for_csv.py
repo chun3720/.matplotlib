@@ -46,7 +46,7 @@ class LIB_tot(Dataloads):
             
             cy.to_parquet(f"{output_path}\\cycle_{j}.pqt")
             steps = cy.step.unique()
-            
+            print(steps)
             dc_point = cy[cy.step == steps[2]].index[-1]
             idx.append(j)
             caps.append(cy.cap.loc[dc_point])
