@@ -62,7 +62,7 @@ def fileloads(year_path: str, file_ext: str) -> List[str]:
         
         if folder_select.isnumeric() and int(folder_select) in range(n) or folder_select == ".":
             done = True
-            
+            break
         print("Invalid input! retry")
         
     # if not folder_select:
