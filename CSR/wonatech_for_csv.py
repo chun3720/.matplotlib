@@ -141,9 +141,13 @@ def get_export(path, exp_obj):
     header_tot = []
     
     for i, exp in enumerate(exp_obj):
-        header = [f"charge_{i}", f"volt_{i}", f"discharge_{i}", exp.name]
-        tot_df = pd.concat([tot_df, exp.df], axis = 1, ignore_index = True)
-        header_tot += header
+        try:
+            exp.get_GCD()
+            header = [f"charge_{i}", f"volt_{i}", f"discharge_{i}", exp.name]
+            tot_df = pd.concat([tot_df, exp.df], axis = 1, ignore_index = True)
+            header_tot += header
+        except:
+            pass
     
     tot_df.columns = header_tot
     tot_df.to_pickle(tot_pkl)
