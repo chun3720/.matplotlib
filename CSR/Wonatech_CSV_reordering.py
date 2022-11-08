@@ -37,17 +37,28 @@ def main(date_path = year_path):
     cyc_files = [_ for _ in mother_path.iterdir() if "CYC" in _.name]
     
     sub_paths = []
-    for dc, cyc in zip(dc_files, cyc_files):
+    
+    if len(dc_files) == len(cyc_files) == 0:
+        for folder in mother_path.iterdir():
+            if folder.name =="cycle_auto":
+                pass
+            
+            else:
+                sub_paths.append(folder)
+                   
+    else:
         
-        folder_name = dc.name[:-7]
-        
-        child_path = mother_path.joinpath(folder_name)
-        sub_paths.append(child_path)
-        if not child_path.exists():
-            child_path.mkdir()
-        
-        dc.rename(child_path/dc.name)
-        cyc.rename(child_path/cyc.name)
+        for dc, cyc in zip(dc_files, cyc_files):
+            
+            folder_name = dc.name[:-7]
+            
+            child_path = mother_path.joinpath(folder_name)
+            sub_paths.append(child_path)
+            if not child_path.exists():
+                child_path.mkdir()
+            
+            dc.rename(child_path/dc.name)
+            cyc.rename(child_path/cyc.name)
     
     check = input("type split basis (default value is 1):  ")
     
