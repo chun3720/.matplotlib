@@ -48,8 +48,6 @@ class EC_measurement(Dataloads):
         
         title = self.name
         cycles = self.df.num.unique()
-        
-        sep_dfs = []
         cols = ["Cap", "Volt"]
         tot_df = pd.DataFrame()
         header_tot = []
@@ -88,6 +86,7 @@ def get_report(exp_obj, path):
     
     if not os.path.exists(output_path):
         os.mkdir(output_path)
+    
     tot_caps = []
     for exp in exp_obj:
         exp_df, exp_caps = exp.get_separation()

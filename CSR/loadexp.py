@@ -115,19 +115,38 @@ def GUI_load():
         
     return dir_path
 
+# @dataclass
+# class Dataloads:
+#     path : str
+#     file : str 
+    
+#     def __post_init__(self):
+#         self.path_obj = Path(self.path)        
+#         self.file_path = self.path_obj.joinpath(self.file)
+#         self.name, self.ext = os.path.splitext(self.file_path.name)
+        
 @dataclass
 class Dataloads:
+    
     path : str
-    file : str 
+    file : str = None
     
     def __post_init__(self):
-        self.path_obj = Path(self.path)
         
-        self.file_path = self.path_obj.joinpath(self.file)
-        self.name, self.ext = os.path.splitext(self.file_path.name)
-        
-        # self.file_path = os.path.join(self.path, self.file)
-        # self.name, self.ext = os.path.splitext(self.file)
+        if self.file is None:
+            
+            self.file_path = self.path
+            self.path = self.file_path.parent
+            self.name, self.ext = self.file_path.stem, self.file_path.suffix
+            
+        else:
+            self.path_obj = Path(self.path)
+            # self.file_path = self.path_obj.joinpath(self.file)
+            self.file_path = self.path_obj.joinpath(self.file)
+            self.name, self.ext = os.path.splitext(self.file)
+
+
+
         
 def build_data(path: str, file: List[str], builder: object) -> List[object]:
     "Build class of each file and return list of builded classes"
