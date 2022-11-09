@@ -66,7 +66,7 @@ class LIB_tot(Dataloads):
                 idx.append(j)
                 caps.append(cy.cap.loc[dc_point])
             except:
-                print(f"Error! Skip {j}th cycle and the thereafter data ")
+                print(f"Error! Skip {j}th cycle in <{self.name}> and the thereafter data ")
                 pass
             
         d = {"Cycle": idx, "Specific Capacity (Ah/g)" : np.array(caps)}
