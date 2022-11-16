@@ -10,7 +10,7 @@ import os
 # from loadexp_0318 import *
 from openpyxl import load_workbook
 import csv
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 import sys
 import pandas as pd
 # import peakdetect
@@ -56,6 +56,7 @@ class Wonatech_tot(Dataloads):
 
 
 path = Path(os.getcwd())
+path2 = PureWindowsPath(os.getcwd())
 
 path_ref = "path_ref.pkl"
 xl_ref = "path_ref.xlsx"

@@ -104,9 +104,13 @@ def get_report(exp_obj, path):
     
     dc_caps_specific = tot_caps * 1000 / loading
     
-    dc_caps_df = pd.DataFrame(dc_caps_specific)
+    indx = [_ +1 for _ in range(len(dc_caps_specific))]
+    dc_caps_df = pd.DataFrame({"cycles": indx, "Capacity (mAh/g)" : dc_caps_specific})
+    # dc_caps_df = pd.DataFrame(dc_caps_specific, index = range(len(dc_caps_specific)))
     dc_caps_df.to_csv(f"{output_path}\\cycles.csv")
-
+    dc_caps_df.to_excel(f"{output_path}\\Cycle_tot.xlsx", index = "cycles" )
+    
+    
         
         
     

@@ -6,15 +6,15 @@ Created on Thu Oct 20 17:13:01 2022
 """
 
 import os
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 import pandas as pd
-import numpy as np
 
 
 def convertor(item):
     
     try:
         return Path(item)
+        # return PureWindowsPath(item)
     
     except:
         pass

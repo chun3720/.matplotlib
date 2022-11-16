@@ -8,7 +8,7 @@ last update : Feb 15 2022
 import os
 from dataclasses import dataclass
 from typing import List
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 import PySimpleGUI as sg
 import pandas as pd
 
@@ -104,7 +104,7 @@ def progress_bar(progress: int, total: int) -> None:
 #         self.name, self.ext = os.path.splitext(self.file)
         
 
-def GUI_load():
+def GUI_load() -> str:
     dir_path = sg.popup_get_folder("Select Folder")
     if not dir_path:
         sg.popup("Cancel", "No folder selected")
@@ -148,17 +148,27 @@ class Dataloads:
 
 
         
-def build_data(path: str, file: List[str], builder: object) -> List[object]:
+def build_data(path: str, file: List[str], builder: object, err_skip = True) -> List[object]:
     "Build class of each file and return list of builded classes"
     data = []
-       
+    
+    
+    if not err_skip:
+        
+        for item in file:
+            
+            data.append(builder(path, item))
+    
+        
     for item in file:
-        data.append(builder(path, item))
-        # try:
-        #     data.append(builder(path, item))
-        # except:
-        #     print(f'fail to load {item} file')
-        #     pass
+    
+        try:
+            data.append(builder(path, item))
+        except:
+            print(f'fail to load <{item}> file')
+            pass
+        
+    
     return data
 
 # from datetime import datetime
@@ -217,3 +227,17 @@ def get_data_folder(py_name):
     
     return year_path
 
+
+def win2linux(path):
+    # switch = {"C:\\" : "/mnt/c", "D:\\" : "/mnt/d"}  
+
+    winpath = PureWindowsPath(path)
+    p_elements = list(winpath.parts)
+    # p_elements[0] = switch[p_elements[0]]
+    p_elements[0] = "/mnt/" + p_elements[0][0].lower()
+    linux_path = "/".join(p_elements)
+    
+    res_path = Path(linux_path)
+    
+    return res_path
+    

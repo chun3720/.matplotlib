@@ -59,7 +59,12 @@ class LIB_tot(Dataloads):
             
                 # print(non_rest_steps)
             try:
-                c_step, d_step = non_rest_steps
+                if len(non_rest_steps) == 3:
+                    c_step, cv_step, d_step = non_rest_steps
+                else:
+                    c_step, d_step = non_rest_steps
+                
+                # c_step, d_step = non_rest_steps
                 # print(steps)
                 # dc_point = cy[cy.step == steps[2]].index[-1] if len(steps) == 4 else cy[cy.step == steps[3]].index[-1]
                 dc_point = cy[cy.step ==d_step].index[-1]
@@ -108,18 +113,55 @@ class LIB_sep(Dataloads):
             if cap_at_check_point != 0:
                 non_rest_steps.append(s)
                 
-        c_step, d_step = non_rest_steps
+        if len(non_rest_steps) == 3:
+            c_step, cv_step, d_step = non_rest_steps
+        else:
+            c_step, d_step = non_rest_steps
+            cv_step = None
             
-        return (c_step, d_step)
+        return (c_step, d_step, cv_step)
         
     def get_GCD(self):
         
-        charge_step, discharge_step = self.get_steps()
+        charge_step, discharge_step, cv_step = self.get_steps()
         # steps = self.raw.step.unique()
         cols = ["cap", "volt"]
-        self.df = pd.concat([self.raw[self.raw.step == charge_step][cols].reset_index(drop = True),  \
-                             self.raw[self.raw.step == discharge_step][cols].reset_index(drop = True)], \
-                            axis =1, ignore_index = True)
+        
+        if cv_step is None:
+            self.df = pd.concat([self.raw[self.raw.step == charge_step][cols].reset_index(drop = True),  \
+                                 self.raw[self.raw.step == discharge_step][cols].reset_index(drop = True)], \
+                                axis =1, ignore_index = True)
+                
+        else:
+            charge_with_cv = pd.concat([self.raw[self.raw.step == charge_step][cols], \
+                                        self.raw[self.raw.step == cv_step][cols]] \
+                                        
+                                        
+                                        )
+       
+            discharge = self.raw[self.raw.step == discharge_step][cols].reset_index(drop = True)
+            
+            discharge_cap = discharge.cap.max()
+            
+            # print(discharge_cap)
+            
+            charge_with_floor = charge_with_cv[charge_with_cv.cap < discharge_cap]
+            
+            # print(charge_with_floor[cols])
+            # print(charge_with_cv)
+            
+            
+            self.df = pd.concat([charge_with_floor[cols].reset_index(drop = True),  \
+                                 
+                                 self.raw[self.raw.step == discharge_step][cols].reset_index(drop = True)], \
+                                axis =1, ignore_index = True)
+            
+            
+            #original
+            # self.df = pd.concat([charge_with_cv[cols].reset_index(drop = True),  \
+                                 
+            #                      self.raw[self.raw.step == discharge_step][cols].reset_index(drop = True)], \
+            #                     axis =1, ignore_index = True)
         self.df.columns = ["q_c", "v_c", "q_d", f"{self.name}"]
         
         
@@ -141,12 +183,20 @@ def get_export(path, exp_obj):
     header_tot = []
     
     for i, exp in enumerate(exp_obj):
+        # exp.get_GCD()
+        # header = [f"charge_{i}", f"volt_{i}", f"discharge_{i}", exp.name]
+        # tot_df = pd.concat([tot_df, exp.df], axis = 1, ignore_index = True)
+        # header_tot += header
+        
+        
+        
         try:
             exp.get_GCD()
             header = [f"charge_{i}", f"volt_{i}", f"discharge_{i}", exp.name]
             tot_df = pd.concat([tot_df, exp.df], axis = 1, ignore_index = True)
             header_tot += header
         except:
+            # print("check here!")
             pass
     
     tot_df.columns = header_tot
