@@ -102,15 +102,32 @@ def get_report(exp_obj, path):
     tot_df.to_hdf(hdf_file, key = "tot_df", mode = "w")
     tot_caps = np.array(tot_caps)
     
-    loading = 16 # mg
+    
+    # loading = 16 # mg
+    
+    check = input("type tap density and area (ex: 3 * 16):  ")
+    
+    density, area = check.split("*")
+    
+    loading = float(density) * float(area)
     
     dc_caps_specific = tot_caps * 1000 / loading
     
     indx = [_ +1 for _ in range(len(dc_caps_specific))]
     dc_caps_df = pd.DataFrame({"cycles": indx, "Capacity (mAh/g)" : dc_caps_specific})
     # dc_caps_df = pd.DataFrame(dc_caps_specific, index = range(len(dc_caps_specific)))
-    dc_caps_df.to_csv(f"{output_path}\\cycles.csv")
-    dc_caps_df.to_excel(f"{output_path}\\Cycle_tot.xlsx", index = "cycles" )
+    # dc_caps_df.to_csv(f"{output_path}\\cycles.csv")
+    
+    loading_memo = {"tap density (mg/cm2)": [density], "area (cm2)": [area]}
+    
+    loading_df = pd.DataFrame(loading_memo)
+    
+    excel_file = f"{output_path}\\Cycle_tot.xlsx"
+    # dc_caps_df.to_excel(f"{output_path}\\Cycle_tot.xlsx", index = "cycles" )
+    with pd.ExcelWriter(excel_file) as writer:
+        dc_caps_df.to_excel(writer, index = "cycles", sheet_name = "Sheet1")
+        loading_df.to_excel(writer, sheet_name = "mass info")
+        
     
     
     cols = tot_df.columns
@@ -118,7 +135,11 @@ def get_report(exp_obj, path):
     for i in range(0, len(cols), 2):
         plt.plot(tot_df[cols[i]], tot_df[cols[i+1]])
         
+    plt.show()
         
+    dc_caps_df.plot.scatter(x = "cycles", y = "Capacity (mAh/g)")
+    
+    plt.show()
   
         
     

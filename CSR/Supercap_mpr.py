@@ -14,7 +14,7 @@ import numpy as np
 from Supycap import Load_capacitor
 
 year_path  = "D:\\Researcher\\JYCheon\\DATA\\Electrochemistry\\2022\\Raw"
-
+plt.style.use(['science', 'no-latex'])
 class Raw_mpr(Dataloads):
     def __init__(self, path, file):
         Dataloads.__init__(self, path, file)
@@ -89,7 +89,7 @@ class Raw_mpr(Dataloads):
         tot_file = f"{self.output_path}\\{title}.txt"
         tot_df.to_csv(tot_file, index = False, sep = " ")
         
-        return tot_file
+        return (tot_file, cy_nums)
             
                 
 
@@ -97,11 +97,19 @@ raw_list, path, _, _ = fileloads(year_path, '.mpr')
 exp_obj = build_data(path, raw_list, Raw_mpr, False)                
 
 for exp in exp_obj:
-    f = exp.get_separation()
+    tot_txt_file, tot_cycle = exp.get_separation()
     curr = exp.get_info()
-    supercap = Load_capacitor(f, ESR_method =2, current = curr, cap_grav = False)
-    supercap.Check_analysis(begin = 1, end = 3)
-    supercap.Cap_vs_cycles()
+    supercap = Load_capacitor(tot_txt_file, ESR_method =2, current = curr, cap_grav = False, cap_method = 2)
+    supercap.Check_analysis(begin = 1, end = len(exp.cycles)//2 -1)
+    plt.title(f"{exp.name}")
+    plt.show()
+    cap_results = np.array(supercap.cap_ls)
+    plt.figure(figsize = (4, 3))
+    plt.scatter(range(cap_results.shape[0]), cap_results*1000, marker = 'o')
+    plt.xlabel("number of cycles")
+    plt.ylabel("Capacitance (mF)")
+    plt.title(f"{exp.name}")
+    # supercap.Cap_vs_cycles()
     
 # f = exp_obj[0].get_separation()
 
