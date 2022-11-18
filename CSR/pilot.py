@@ -63,3 +63,14 @@ exp_obj = Dataloads(test_obj)
 
 
 exp_obj2 = Dataloads(test_obj.parent, test_obj.name)
+
+
+hdf_file = r"D:\Researcher\JYCheon\DATA\Electrochemistry\2022\Raw\1116 NCMLTO PVDF Epoxy w 60 vac 2h\output\Capacity_tot.hdf5"
+
+df = pd.read_hdf(hdf_file, key = "tot_df")
+
+# from galvani import BioLogic
+# mpr = r"D:\Researcher\JYCheon\DATA\Electrochemistry\2022\Raw\1116 NCMLTO PVDF Epoxy w 60 vac 2h\1116 NCMLTO PVDF Epoxy w 60 vac 2h.mpr"
+# mpr_file = BioLogic.MPRfile(mpr)
+
+# df = pd.DataFrame(mpr_file.data)

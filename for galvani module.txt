@@ -1,0 +1,3 @@
+7: ('dq/mA.h', '<f8'), # JYC modified dQ/mA.h -> dq/mA.h
+
+174 :('<Ewe>/V', '<f4'), # JYC modified

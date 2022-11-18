@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Apr 14 14:36:11 2022
-
 @author: user
 """
 
@@ -11,8 +10,10 @@ import os, re
 from matplotlib import pyplot as plt
 import numpy as np
 import seaborn as sns
+from pathlib import Path
 
-
+# import shutil
+# from loadexp_0318 import *
 plt.style.use(['science', 'no-latex'])
 
 year_path  = "D:\\Researcher\\JYCheon\\DATA\\Electrochemistry\\2022\\Raw"
@@ -32,14 +33,7 @@ def add_median_labels(ax, fmt='.1f'):
         #     path_effects.Stroke(linewidth=3, foreground=median.get_color()),
         #     path_effects.Normal(),
         # ])
-
-def set_figure(leg, xlabel, ylabel, show = True):
-    for line, text in zip(leg.get_lines(), leg.get_texts()):
-        text.set_color(line.get_color())
-    plt.xlabel(xlabel)
-    plt.ylabel(ylabel)
-    if show:
-        plt.show()
+        
         
 class EC_measurement(Dataloads):
     def __init__(self, path, file):
@@ -50,20 +44,11 @@ class EC_measurement(Dataloads):
         with open(self.file_path, 'r') as f:
             lines = f.readlines()
             self.method = method_dict[lines[3]]
+            # header = lines[1][18:20]   
             h = re.findall('[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?', lines[1])
 
         self.header = int(h[0])     
-        
-        if self.method == "GCD":
-            self.df = pd.read_csv(self.file_path, skiprows = self.header-1, sep = "\t", header = 0\
-                                  , usecols = ["time/s", "control/mA", '<Ewe>/V', 'Capacity/mA.h', 'cycle number' ])
-        
-        elif self.method == "CV":
-            self.df = pd.read_csv(self.file_path, skiprows = self.header-1, sep = "\t", header = 0\
-                                  , usecols = ["time/s", "control/V", "Ewe/V", "<I>/mA", "cycle number"])
-            
-    
-        # self.df = pd.read_csv(self.file_path, skiprows = self.header-1, sep = '\t', header = 0)
+        self.df = pd.read_csv(self.file_path, skiprows = self.header-1, sep = '\t', header = 0)
         
         check = self.df["cycle number"].value_counts().to_dict()
         _check = sorted(list(check.keys()))
@@ -79,11 +64,10 @@ class EC_measurement(Dataloads):
             self.name = self.name[:-2]
 
         if self.method == 'GCD':            
-            # self.df.drop(columns = ['mode', 'ox/red', 'error', 'Ns changes','counter inc.', 'P/W'], inplace = True)
+            self.df.drop(columns = ['mode', 'ox/red', 'error', 'Ns changes','counter inc.', 'P/W'], inplace = True)
             self.appl_current = self.df["control/mA"].loc[0]
             self.appl_unit = self.df.columns[2].split("/")[1]
             self.cap_result = 0
-            self.Is = 0
             self.cap_unit  = 'F'
             self.origin  = self.df["time/s"].loc[0]
             self.df["time/s"] -= self.origin
@@ -103,7 +87,7 @@ class EC_measurement(Dataloads):
                 
             
         elif self.method == 'CV':
-            # self.df.drop(columns = ['mode', 'ox/red', 'error', 'counter inc.', 'P/W'], inplace = True)
+            self.df.drop(columns = ['mode', 'ox/red', 'error', 'counter inc.', 'P/W'], inplace = True)
             t1, v1 = self.df[["time/s", "control/V"]].loc[1]
             t2, v2 = self.df[["time/s", "control/V"]].loc[2]
             
@@ -131,30 +115,27 @@ class EC_measurement(Dataloads):
         
         if self.method == "GCD":
             
-            # try:
+            try:
                     
-            k = self.df_charge.shape[0]
-            T1, V1 = self.df_charge[["time/s", "<Ewe>/V"]].loc[k-1]
-
-            if V1 > 2.4:
-                idx_list = self.df_discharge[self.df_discharge["<Ewe>/V"] < 1.5].index
-                T2, V2 = self.df_discharge[["time/s", "<Ewe>/V"]].loc[idx_list[0]]
-            else:
-            ###
-                # for 1V calculation
-                n = self.df.shape[0]
-                T2, V2 = self.df[["time/s", "<Ewe>/V"]].loc[n-1]
-   
-            
-            self.max_point = np.array([T1, T2])
-            self.half_point = np.array([V1, V2])
-            self.slope = (T2- T1) /  (V1-V2)
-            self.cap_result = self.Is * self.slope
+                k = self.df_charge.shape[0]
+                T1, V1 = self.df_charge[["time/s", "<Ewe>/V"]].loc[k-1]
+    
+                if V1 > 2.4:
+                    idx_list = self.df_discharge[self.df_discharge["<Ewe>/V"] < 1.5].index
+                    T2, V2 = self.df_discharge[["time/s", "<Ewe>/V"]].loc[idx_list[0]]
+                else:
+                ###
+                    # for 1V calculation
+                    n = self.df.shape[0]
+                    T2, V2 = self.df[["time/s", "<Ewe>/V"]].loc[n-1]
+       
                 
-                
-            # except:
-            #     print("error in get_calculation")
-            #     pass
+                self.max_point = np.array([T1, T2])
+                self.half_point = np.array([V1, V2])
+                self.slope = (T2- T1) /  (V1-V2)
+                self.cap_result = self.Is * self.slope
+            except:
+                pass
 
         else:
             return None
@@ -184,8 +165,9 @@ class EC_measurement(Dataloads):
             os.mkdir(output_path)
 
         if self.method == "GCD":
-            
+            # Is = str(self.appl_current) + ' ' + self.appl_unit
             Is = self.get_condition()
+            # label = self.name + ', ' + Is
             label = f'{self.name}, {Is}'
             plt.subplot(211)
             plt.plot(self.df["time/s"], self.df["<Ewe>/V"], '--', color = 'gray', label = label)
@@ -194,17 +176,25 @@ class EC_measurement(Dataloads):
             try:
                 plt.plot(self.max_point, self.half_point, 'r-', label = cap_label)
             except:
-                print("error here!")
                 pass
     
             leg = plt.legend(fontsize = 'xx-small')
-            set_figure(leg, "Time (s)", "Voltage (V)", False)
+            for line, text in zip(leg.get_lines(), leg.get_texts()):
+                text.set_color(line.get_color())
+
+            plt.xlabel('Time (s)')
+            # plt.xticks(fontsize = 11)
+            plt.ylabel('Voltage (V)')
+            # plt.yticks(fontsize = 11)10
+            
             plt.subplot(212)
             plt.plot(self.df_charge["Capacity/mA.h"], self.df_charge["<Ewe>/V"], 'b-')
             plt.plot(self.df_discharge["Capacity/mA.h"], self.df_discharge["<Ewe>/V"], 'b-')
             plt.xlabel("Capacity (mAh)")
             plt.ylabel('Voltage (V)')
+
             plt.subplots_adjust(hspace = 0.5)
+            
             plt.savefig(f'{output_path}{self.name}.png', dpi = 300)    
         
         elif self.method  == "CV":
@@ -227,7 +217,8 @@ class EC_measurement(Dataloads):
         def get_slope(time, voltage, sep):
             temp_X = np.array(time)
             temp_Y = np.array(voltage)
-            dx, dy = [], []
+            dx = []
+            dy = []
             for i in range(0, len(temp_X), sep):
                 dx.append(temp_X[i])
                 dy.append(temp_Y[i])
@@ -235,7 +226,7 @@ class EC_measurement(Dataloads):
             dydx = np.diff(dy)/np.diff(dx)
             
             return dydx
-      
+        
         
         if self.method == "GCD":
             X = self.df_discharge["time/s"]
@@ -256,14 +247,18 @@ class EC_measurement(Dataloads):
                 # plt.show()
                 
             except:
-                print("error here!!")
                 pass
+
+
 
 def get_capacity_tot(exp_obj, cols):
     
     return pd.concat([exp_obj.df_charge[cols].reset_index(drop = True)
               ,exp_obj.df_discharge[cols].reset_index(drop = True) ]
               ,axis = 1, ignore_index = True)
+    
+
+
      
 def get_export(exp, path):
     # output_path = path + "output\\"
@@ -272,7 +267,8 @@ def get_export(exp, path):
     if not os.path.exists(output_path):
         os.mkdir(output_path)    
     
-    GCDs, CVs = [], []
+    GCDs = []
+    CVs = []
     for item in exp:
         if item.method == "GCD":
             GCDs.append(item)
@@ -280,62 +276,73 @@ def get_export(exp, path):
         elif item.method == "CV":
             CVs.append(item)
     
-    GCD_list, cap_list, cap_unit, Is_list = [] , [], [], []   
-     
-    gcd_pkl_file = f'{output_path}\\GCD_tot.pkl' 
-    cap_pkl_file = f'{output_path}\\Capacity_tot.pkl'    
-
-    n= len(GCDs)
+    # print(GCDs)
     
-    gcd_tot_df = pd.DataFrame()
-    gcd_header_tot = []
     
-    cap_tot_df = pd.DataFrame()
-    cap_header_tot = []
-    discharge_caps = []
-    for i, gcd in enumerate(GCDs):
-        gcd.get_calculation()
-        gcd_cols = ["time/s", "<Ewe>/V"]
-        gcd_header = [f"time_{i}", gcd.name]
-        gcd_header_tot += gcd_header
-        gcd_tot_df = pd.concat([gcd_tot_df, gcd.df[gcd_cols]], axis = 1, ignore_index = True)
-        
-        
-        cap_cols = ["Capacity/mA.h", "<Ewe>/V"]
-        dc_indx = gcd.df_discharge["Capacity/mA.h"].index[-1]
-        dc_cap = gcd.df_discharge["Capacity/mA.h"].loc[dc_indx]
-        
-        discharge_caps.append(dc_cap)
-        # print(dc_cap)
-        
-        cap_header = [ f'Charge_{i}', f'V_{i}', f'Discharge_{i}',gcd.name ]
-        capacity_df = get_capacity_tot(gcd, cap_cols)
-        cap_header_tot += cap_header
-        cap_tot_df = pd.concat([cap_tot_df, capacity_df], axis = 1, ignore_index = True)
-        
-        
+    GCD_list = []
+    cap_list = []
+    cap_unit = []
+    Is_list = []
+    
+    for gcd in GCDs:
         GCD_list.append(gcd.name)
         Is_list.append(gcd.get_condition())
         cap_list.append(round(gcd.cap_result, 2))
         cap_unit.append(gcd.cap_unit)
-        
-    gcd_tot_df.columns = gcd_header_tot
-    gcd_tot_df.to_pickle(gcd_pkl_file)   
-    cap_tot_df.columns = cap_header_tot
-    cap_tot_df.to_pickle(cap_pkl_file)
-    
-    discharge_caps = np.array(discharge_caps) # mAh
-    
-    loading = 16 # mg
-    
-    dc_caps_specific = discharge_caps * 1000 / loading
-    
-    dc_caps_df = pd.DataFrame(dc_caps_specific)
-    dc_caps_df.to_csv(f"{output_path}\\cycles.csv")
-    # print(dc_caps_df)
     
     d = {"Capacitance (I*dt/dV)": cap_list, "unit": cap_unit, "Current": Is_list}
-    df1 = pd.DataFrame(data = d, index = GCD_list)    
+    df1 = pd.DataFrame(data = d, index = GCD_list)
+    
+    gcd_pkl_file = f'{output_path}\\GCD_tot.pkl'    
+    with pd.ExcelWriter(f'{output_path}\\GCD_tot.xlsx') as writer:
+        n= len(GCDs)
+        progress_bar(0, n)
+        gcd_tot_df = pd.DataFrame()
+        gcd_header_tot = []
+        for i, gcd in enumerate(GCDs):
+            cols = ["time/s", "<Ewe>/V"]
+            header = [f"time_{i}", gcd.name]
+            (
+             gcd.df[cols]
+             .to_excel(writer, startcol = 2*i, index = False, header = header)
+             
+             )
+            gcd_header_tot += header
+            gcd_tot_df = pd.concat([gcd_tot_df, gcd.df[cols]], axis = 1, ignore_index = True)
+            progress_bar(i+1, n)
+        gcd_tot_df.columns = gcd_header_tot
+        gcd_tot_df.to_pickle(gcd_pkl_file)
+        df1.to_excel(writer, sheet_name = 'Summary')
+        
+    pkl_file = f'{output_path}\\Capacity_tot.pkl'    
+    with pd.ExcelWriter(f'{output_path}\\Capacity_tot.xlsx') as writer:
+        
+        n= len(GCDs)
+        progress_bar(0, n)
+        tot_df = pd.DataFrame()
+        header_tot = []
+        for i, gcd in enumerate(GCDs):
+            
+            cols = ["Capacity/mA.h", "<Ewe>/V"]
+            header = [ f'Charge_{i}', f'V_{i}', f'Discharge_{i}',gcd.name ]
+            capacity_df = get_capacity_tot(gcd, cols)
+            (
+                # pd.concat([gcd.df_charge[cols].reset_index(drop = True)
+                #           ,gcd.df_discharge[cols].reset_index(drop = True) ]
+                #           ,axis = 1, ignore_index = True)
+                capacity_df
+                .to_excel(writer, startcol = 4*i, index = False
+                          ,header = header)
+                )
+            header_tot += header
+            tot_df = pd.concat([tot_df, capacity_df], axis = 1, ignore_index = True)
+            progress_bar(i+1, n)
+        
+        tot_df.columns = header_tot
+        tot_df.to_pickle(pkl_file)
+        
+       
+            
 
     if CVs:
         
@@ -350,14 +357,22 @@ def get_export(exp, path):
                  .to_excel(writer, startcol = 2*i, index = False, header = [f'V_{i}', cv.name])
                  )
                 progress_bar(i+1, n)
+            
+
     
     
 def get_multiplot(exp, path):
+    
+    output_path = f'{path}\\output\\'
+    
     color_list = ['k', 'r', 'tab:orange', 'g', 'b', 'm', 'gray', 'brown','darkcyan', 
                   'skyblue', 'hotpink', 'dodgerblue']
+    # color_list = ["k"] + list(mcolors.TABLEAU_COLORS.values()) + ["b", "m", "g", "gray"]
+    # color_list.remove('#17becf')
     n = len(color_list)
-    GCDs, CVs = [], []
-    
+    GCDs = []
+    CVs = []
+
     for item in exp:
         if item.method == "GCD":
             GCDs.append(item)
@@ -367,12 +382,17 @@ def get_multiplot(exp, path):
 
     for i, gcd in enumerate(GCDs):
         condition = gcd.get_condition()
-        label = f'{gcd.name}, {condition}'
+        exp_name = gcd.name
+        label = f'{exp_name}, {condition}'
         plt.plot(gcd.df['time/s'], gcd.df['<Ewe>/V'], label = label, color = color_list[i%n])
     
     leg = plt.legend(fontsize = 'xx-small')
-    set_figure(leg, "Time (s)", "Voltage (V)")
-   
+    for line, text in zip(leg.get_lines(), leg.get_texts()):
+        text.set_color(line.get_color())
+    plt.xlabel("Time (s)")
+    plt.ylabel("Voltage (V)")
+    plt.savefig(f"{output_path}GCD_tot.png", dpi = 300)
+    plt.show() 
     
     for i, gcd in enumerate(GCDs):
         
@@ -380,34 +400,60 @@ def get_multiplot(exp, path):
         plt.plot(gcd.df_discharge["Capacity/mA.h"], gcd.df_discharge["<Ewe>/V"], color = color_list[i%n])
     
     leg = plt.legend(fontsize = 'xx-small')
-    set_figure(leg, "Capacity (mAh)", 'Voltage (V)')
+    for line, text in zip(leg.get_lines(), leg.get_texts()):
+        text.set_color(line.get_color())
+    plt.xlabel("Capacity (mAh)")
+    plt.ylabel('Voltage (V)')
+    plt.show()
     
     if CVs:
-        
+        # for i in range(len(CVs)):
         for i, cv in enumerate(CVs):
             rate = cv.scan_rate * 1000
+            # speed = str(rate) + ' mV/s'
             speed = f'{rate} mV/s'
+            # label = CVs[i].name + ', ' + speed
             label = f'{cv.name}, {speed}'
             plt.plot(cv.df["Ewe/V"], cv.df["<I>/mA"], label = label, color = color_list[i%n])
             
         leg = plt.legend(fontsize = 'xx-small')
-        set_figure(leg, "Voltage (V)", 'Current (mA)')
-       
+        for line, text in zip(leg.get_lines(), leg.get_texts()):
+            text.set_color(line.get_color())
+        
+        plt.xlabel("Voltage (V)")
+        plt.ylabel("Current (mA)")
+        plt.savefig(f"{output_path}CV_tot.png", dpi = 300)
+        plt.show()
+        
+        
+# def get_multibox(exp_obj, path):
+#     Box = {}
+#     for exp in exp_obj:
+#         df = pd.DataFrame(data = exp.caps_mF)
+#         Box[f'{exp.name}'] = exp.caps_mF
+        
+#     sns.boxplot(data = Box)
+#     plt.show()
+    # print(Box)
+        
+
 
 
 def main(py_path):
     
     raw_list, path, _, _ = fileloads(py_path, '.mpt')
     exp_obj = build_data(path, raw_list, EC_measurement)
-    # for exp in exp_obj:
+    for exp in exp_obj:
+        exp.get_calculation()
+        exp.get_plot(path)
+        exp.get_drop()
+        # print(exp.header)
         
-    #     exp.get_calculation()
-    #     exp.get_plot(path)
-        # exp.get_drop()
-            
+        
+        
     get_multiplot(exp_obj, path)
     get_export(exp_obj, path)
-    
+    # get_multibox(exp_obj, path)
     
 if __name__ == "__main__":
     plt.style.use(['science', 'no-latex'])

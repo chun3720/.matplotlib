@@ -159,14 +159,14 @@ def build_data(path: str, file: List[str], builder: object, err_skip = True) -> 
             
             data.append(builder(path, item))
     
+    else:    
+        for item in file:
         
-    for item in file:
-    
-        try:
-            data.append(builder(path, item))
-        except:
-            print(f'fail to load <{item}> file')
-            pass
+            try:
+                data.append(builder(path, item))
+            except:
+                print(f'fail to load <{item}> file')
+                pass
         
     
     return data
