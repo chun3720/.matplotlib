@@ -14,7 +14,21 @@ import numpy as np
 from Supycap import Load_capacitor
 
 year_path  = "D:\\Researcher\\JYCheon\\DATA\\Electrochemistry\\2022\\Raw"
-plt.style.use(['science', 'no-latex'])
+
+
+
+class Sep_csv(Dataloads):
+    def __init__(self, path, file):
+        Dataloads.__init__(self, path, file)
+        
+        self.df = pd.read_csv(self.file_path)
+        
+        
+        self.check_point = self.df.loc[0, "Time"]
+        
+        self.df["Time"] = self.df["Time"] - self.check_point
+        
+        
 class Raw_mpr(Dataloads):
     def __init__(self, path, file):
         Dataloads.__init__(self, path, file)
@@ -33,6 +47,11 @@ class Raw_mpr(Dataloads):
         
         if not os.path.exists(self.output_path):
             os.mkdir(self.output_path)
+        
+        self.sep_path = os.path.join(self.path, "GCD_last")
+        
+        if not os.path.exists(self.sep_path):
+            os.mkdir(self.sep_path)
         
     
     def get_info(self):
@@ -75,7 +94,7 @@ class Raw_mpr(Dataloads):
             cy_df = pd.concat([charge[cols].reset_index(drop = True), discharge[cols].reset_index(drop = True)], axis =0)
             
             if i == cy_nums -1:
-                cy_df.to_csv(f"{self.output_path}\\{title}_cycle_{i+1}.csv")
+                cy_df.to_csv(f"{self.sep_path}\\{title}_cycle_{i+1}.csv")
                 
             
             # cy_df.to_csv(f"{self.path}\\{title}_cycle_{i+1}.csv")
@@ -89,7 +108,7 @@ class Raw_mpr(Dataloads):
         tot_file = f"{self.output_path}\\{title}.txt"
         tot_df.to_csv(tot_file, index = False, sep = " ")
         
-        return (tot_file, cy_nums)
+        return (tot_file, self.sep_path)
             
                 
 
@@ -97,20 +116,38 @@ raw_list, path, _, _ = fileloads(year_path, '.mpr')
 exp_obj = build_data(path, raw_list, Raw_mpr, False)                
 
 for exp in exp_obj:
-    tot_txt_file, tot_cycle = exp.get_separation()
+    tot_txt_file, sep_path = exp.get_separation()
     curr = exp.get_info()
     supercap = Load_capacitor(tot_txt_file, ESR_method =2, current = curr, cap_grav = False, cap_method = 2)
+    supercap2 = Load_capacitor(tot_txt_file, ESR_method =2, current = curr, cap_grav = False, cap_method = 1)
     supercap.Check_analysis(begin = 1, end = len(exp.cycles)//2 -1)
+    
     plt.title(f"{exp.name}")
     plt.show()
+    supercap2.Check_analysis(begin = 1, end = len(exp.cycles)//2 -1)
     cap_results = np.array(supercap.cap_ls)
+    cap_results2 = np.array(supercap2.cap_ls)
     plt.figure(figsize = (4, 3))
-    plt.scatter(range(cap_results.shape[0]), cap_results*1000, marker = 'o')
+    plt.scatter(range(cap_results.shape[0]), cap_results*1000, marker = 'o', c = "r")
+    plt.scatter(range(cap_results2.shape[0]), cap_results2*1000, marker = 'o', c = "b")
     plt.xlabel("number of cycles")
     plt.ylabel("Capacitance (mF)")
     plt.title(f"{exp.name}")
+    plt.show()
     # supercap.Cap_vs_cycles()
     
+    
+sep_files = [_ for _ in os.listdir(sep_path) if _.endswith("csv")]
+
+sep_obj = build_data(sep_path, sep_files, Sep_csv)
+
+plt.style.use(['science', 'no-latex'])
+for sep in sep_obj:
+    plt.plot(sep.df.Time, sep.df.Volt)
+    
+plt.xlabel("Time (s)")    
+plt.ylabel("Voltage (V)")
+
 # f = exp_obj[0].get_separation()
 
 # curr = exp_obj[0].get_info()
