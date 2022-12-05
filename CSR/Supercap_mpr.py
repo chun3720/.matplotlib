@@ -8,7 +8,7 @@ Created on Thu Nov 17 17:20:28 2022
 import os
 import pandas as pd
 from galvani import BioLogic
-from loadexp import Dataloads, fileloads, build_data
+from loadexp import Dataloads, fileloads, build_data, build_data2
 import matplotlib.pyplot as plt
 import numpy as np
 from Supycap import Load_capacitor
@@ -110,43 +110,72 @@ class Raw_mpr(Dataloads):
         
         return (tot_file, self.sep_path)
             
-                
 
-raw_list, path, _, _ = fileloads(year_path, '.mpr')
-exp_obj = build_data(path, raw_list, Raw_mpr, False)                
-
-for exp in exp_obj:
-    tot_txt_file, sep_path = exp.get_separation()
-    curr = exp.get_info()
-    supercap = Load_capacitor(tot_txt_file, ESR_method =2, current = curr, cap_grav = False, cap_method = 2)
-    supercap2 = Load_capacitor(tot_txt_file, ESR_method =2, current = curr, cap_grav = False, cap_method = 1)
-    supercap.Check_analysis(begin = 1, end = len(exp.cycles)//2 -1)
-    
-    plt.title(f"{exp.name}")
-    plt.show()
-    supercap2.Check_analysis(begin = 1, end = len(exp.cycles)//2 -1)
-    cap_results = np.array(supercap.cap_ls)
-    cap_results2 = np.array(supercap2.cap_ls)
-    plt.figure(figsize = (4, 3))
-    plt.scatter(range(cap_results.shape[0]), cap_results*1000, marker = 'o', c = "r")
-    plt.scatter(range(cap_results2.shape[0]), cap_results2*1000, marker = 'o', c = "b")
-    plt.xlabel("number of cycles")
-    plt.ylabel("Capacitance (mF)")
-    plt.title(f"{exp.name}")
-    plt.show()
-    # supercap.Cap_vs_cycles()
+def get_supycap(exp_obj):
     
     
-sep_files = [_ for _ in os.listdir(sep_path) if _.endswith("csv")]
-
-sep_obj = build_data(sep_path, sep_files, Sep_csv)
-
-plt.style.use(['science', 'no-latex'])
-for sep in sep_obj:
-    plt.plot(sep.df.Time, sep.df.Volt)
+    for exp in exp_obj:
+        tot_txt_file, sep_path = exp.get_separation()
+        curr = exp.get_info()
+        supercap = Load_capacitor(tot_txt_file, ESR_method =2, current = curr, cap_grav = False, cap_method = 2)
+        supercap2 = Load_capacitor(tot_txt_file, ESR_method =2, current = curr, cap_grav = False, cap_method = 1)
+        supercap.Check_analysis(begin = 1, end = len(exp.cycles)//2 -1)
+        
+        plt.title(f"{exp.name}")
+        plt.show()
+        supercap2.Check_analysis(begin = 1, end = len(exp.cycles)//2 -1)
+        cap_results = np.array(supercap.cap_ls)
+        cap_results2 = np.array(supercap2.cap_ls)
+        plt.figure(figsize = (4, 3))
+        plt.scatter(range(cap_results.shape[0]), cap_results*1000, marker = 'o', c = "r")
+        plt.scatter(range(cap_results2.shape[0]), cap_results2*1000, marker = 'o', c = "b")
+        plt.xlabel("number of cycles")
+        plt.ylabel("Capacitance (mF)")
+        plt.title(f"{exp.name}")
+        plt.show()
+        
     
-plt.xlabel("Time (s)")    
-plt.ylabel("Voltage (V)")
+    return sep_path
+        
+        
+def get_tot_plot(sep_path):
+    
+    sep_files = [_ for _ in os.listdir(sep_path) if _.endswith("csv")]
+    
+    sep_obj = build_data(sep_path, sep_files, Sep_csv)
+    
+    plt.style.use(['science', 'no-latex'])
+    for sep in sep_obj:
+        plt.plot(sep.df.Time, sep.df.Volt)
+        
+    plt.xlabel("Time (s)")    
+    plt.ylabel("Voltage (V)")
+    
+    
+    
+
+
+            
+def main(date_path = year_path):
+         
+         
+    raw_list, path, _, _ = fileloads(date_path, '.mpr')
+    exp_obj = build_data(path, raw_list, Raw_mpr, False)    
+    
+    exp_dict = build_data2(path, raw_list, Raw_mpr, False)            
+    
+    sep_path = get_supycap(exp_obj)
+    
+    get_tot_plot(sep_path)
+    
+    return exp_obj
+    
+
+if __name__ == "__main__":
+    objs = main(year_path)
+
+    
+    
 
 # f = exp_obj[0].get_separation()
 

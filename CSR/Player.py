@@ -36,9 +36,10 @@ def runCSR(direct = False):
     code_dict = dict(enumerate(codes))
     
     for key, value in code_dict.items():
-        print(f'{key} : {value}')
+        key = str(key)
+        print(f'[{key.rjust(2)}] : {value}')
     
-    selector = input("which file want to run: ")
+    selector = input("\nwhich file want to run: ")
     chosen = int(selector)
     
     

@@ -11,6 +11,7 @@ from typing import List
 from pathlib import Path, PureWindowsPath
 import PySimpleGUI as sg
 import pandas as pd
+from collections import defaultdict
 
 
 def path_gen(path: str, file_ext: str = None) -> str:
@@ -29,7 +30,9 @@ def path_gen(path: str, file_ext: str = None) -> str:
     path_dict = dict(enumerate(path_folder))
     
     for key, val in path_dict.items():
-        print(f'{key} : {val}')
+        key = str(key)
+        
+        print(f'[{key.center(3)}] : {val}')
         
     print('==========================================')       
     
@@ -171,6 +174,17 @@ def build_data(path: str, file: List[str], builder: object, err_skip = True) -> 
     
     return data
 
+
+def build_data2(path: str, files: List[str], builder: object, err_skip = True):
+    
+    hashmap = defaultdict(builder)
+    
+    if not err_skip:
+        for file in files:
+            hashmap[file] = builder(path, file)
+            
+    return hashmap
+    
 # from datetime import datetime
 
 # print(datetime.now().isoformat(timespec = 'minutes'))

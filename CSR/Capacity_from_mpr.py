@@ -95,7 +95,11 @@ def get_report(exp_obj, path):
     tot_df.to_hdf(hdf_file, key = "tot_df", mode = "w")
     tot_caps = np.array(tot_caps)
     
-    loading = 16 # mg
+    check = input("type tap density and area (ex: 3 * 16):  ")
+    
+    density, area = check.split("*")
+    
+    loading = float(density) * float(area)
     
     dc_caps_specific = tot_caps * 1000 / loading
     
@@ -110,7 +114,11 @@ def get_report(exp_obj, path):
     for i in range(0, len(cols), 2):
         plt.plot(tot_df[cols[i]], tot_df[cols[i+1]])
         
+    plt.xlabel("Capacity (mAh)")
+    plt.ylabel("Voltage (V)")
     plt.show()
+    
+    
     
     dc_caps_df.plot.scatter(x = "cycles", y = "Capacity (mAh/g)")
     

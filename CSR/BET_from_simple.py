@@ -173,13 +173,17 @@ def get_multiplot(exp):
      
 
 
-# def main(date_path = year_path):
+def main(date_path = year_path):
 
-raw_list, path, _, _ = fileloads(year_path, '.csv')
-exp = build_data(path, raw_list, N2_sorption)
-
-for ex in exp:
-    ex.get_BET()
+    raw_list, path, _, _ = fileloads(date_path, '.csv')
+    exp = build_data(path, raw_list, N2_sorption)
+    
+    for ex in exp:
+        ex.get_BET()
+        
+        
+if __name__ == "__main__":
+    main(year_path)
     
     # plot(exp)
     # get_export(exp, path)
