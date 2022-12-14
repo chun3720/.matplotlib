@@ -157,7 +157,7 @@ def get_specific(name, num = -1):
         condition = temp[0][:num-1] + '.mpl'
         return condition
     else:
-        return get_test(name, num-1)
+        return get_specific(name, num-1)
     
 
 def get_export(path, exp_data, dlc_df, exp_path):
