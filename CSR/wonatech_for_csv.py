@@ -43,8 +43,8 @@ class LIB_tot(Dataloads):
         for i in range(self.cycle_tot):
             j = i + 1
             cy = self.raw[self.raw.num == j]
-            
-            cy.to_parquet(f"{output_path}\\cycle_{j}.pqt")
+            pqt2export = os.path.join(output_path, f"cycle_{j}.pqt")
+            cy.to_parquet(pqt2export)
             steps = cy.step.unique()
 
             
@@ -177,7 +177,8 @@ def get_export(path, exp_obj):
     if not os.path.exists(output_path):
         os.mkdir(output_path)
     
-    tot_pkl = f"{output_path}\\total.pkl"
+    # tot_pkl = f"{output_path}\\total.pkl"
+    tot_pkl = os.path.join(output_path, "total.pkl")
     
     tot_df = pd.DataFrame()
     header_tot = []

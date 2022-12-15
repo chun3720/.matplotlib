@@ -17,7 +17,7 @@ import collections
 doc = {
     "Battery_cycle.py" : {
         "input": ".xlsx", 
-        "help": "Capacity vs cycle, Biologic"
+        "help": "Capacity vs cycle, Wonatech"
         },
     
     "Battery_GCD_wonatech.py" : {
@@ -50,7 +50,7 @@ doc = {
     
     "EIS_wonatech.py": {
         "input": ".xlsx", 
-        "help": "get total EIS graph"},
+        "help": "get total EIS graph, Wonatech"},
     
     "Export_path.py": {
         "input": "None", 
@@ -82,7 +82,7 @@ doc = {
     
     "Supercap_GCD_mpt.py": {
         "input": ".mpt", 
-        "help" : "Voltage vs Capacity, Biologic"},
+        "help" : "Voltage vs Capacity for battery, Biologic"},
     
     "Supercap_GCD_mpt_legacy.py": {
         "input": ".mpt", 
@@ -106,7 +106,7 @@ doc = {
     
     "wonatech_for_csv.py": {
         "input": ".csv", 
-        "help": "plot for battery, Wonatech"}
+        "help": "plot for selected cycle, Wonatech"}
         }
 
 
@@ -144,7 +144,8 @@ def runCSR(direct = False):
         print(f'[{key.rjust(2)}] :', end = " ")
         print(value.ljust(30, '_'), end = '')
         print(d.rjust(10, '_'), end = "")
-        print(h.rjust(50, "_"))
+        print(h.rjust(50, "_"), end = "-----")
+        print(f'[{key.rjust(2)}]' )
         
         # print(f"{doc[value].ljust(6)}")
 
