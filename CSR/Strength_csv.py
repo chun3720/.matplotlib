@@ -50,7 +50,9 @@ class Strength(Dataloads):
 
 def get_export(exp_obj, path):
     
-    output_path = f'{path}\\output\\'
+    output_path = os.path.join(path, "output")
+    
+    # output_path = f'{path}\\output\\'
 
     if not os.path.exists(output_path):
         os.mkdir(output_path)
@@ -63,14 +65,14 @@ def get_export(exp_obj, path):
     for exp in exp_obj:
         names.append(exp.name[:-16])
         d.append(exp.get_data())
-             
-    with pd.ExcelWriter(f'{output_path}\\data_tot.xlsx') as writer:
+    file2write = os.path.join(output_path, "data_tot.xlsx")
+    with pd.ExcelWriter(file2write) as writer:
         pd.DataFrame(data = d, columns = header, index = names).to_excel(writer)
         
 
 
 def get_graph(exp_obj, path):
-    output_path = f'{path}\\output\\'
+    output_path = os.path.join(path, "output")
     
     names = []
 
@@ -94,7 +96,8 @@ def get_graph(exp_obj, path):
         
         ax = sns.barplot(x = df.index, y = col, data = df1)
         ax.set_xticklabels(names, fontsize = 8, rotation = angle)
-        plt.savefig(f"{output_path}\{col[:8]}.png", dpi = 300)
+        file2fig = os.path.join(output_path, f"{col[:8]}.png")
+        plt.savefig(file2fig, dpi = 300)
         plt.show()
         
    
@@ -108,7 +111,8 @@ def get_graph(exp_obj, path):
     ax.set_xticklabels(names, fontsize = 8, rotation = angle)
     k = df1["Stiffness (N/tex)"]
     plt.ylim(0, max(k)*1.5)
-    plt.savefig(f"{output_path}doubleY.png", dpi = 300)
+    file2doubleY = os.path.join(output_path, "doubleY.png")
+    plt.savefig(file2doubleY, dpi = 300)
     
     
  

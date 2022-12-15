@@ -94,7 +94,8 @@ class Raw_mpr(Dataloads):
             cy_df = pd.concat([charge[cols].reset_index(drop = True), discharge[cols].reset_index(drop = True)], axis =0)
             
             if i == cy_nums -1:
-                cy_df.to_csv(f"{self.sep_path}\\{title}_cycle_{i+1}.csv")
+                csv2export = os.path.join(self.sep_path, f"{title}_cycle_{i+1}.csv")
+                cy_df.to_csv(csv2export)
                 
             
             # cy_df.to_csv(f"{self.path}\\{title}_cycle_{i+1}.csv")
@@ -105,7 +106,8 @@ class Raw_mpr(Dataloads):
             # discharge_caps.append(dc_cap)
             # header = [f"{title}_Qc{i+1}", f"{title}_Vc{i+1}", f"{title}_Qd{i+1}", f"{title}_{i+1}"]
             # header_tot += header
-        tot_file = f"{self.output_path}\\{title}.txt"
+        # tot_file = f"{self.output_path}\\{title}.txt"
+        tot_file = os.path.join(self.output_path, f"{title}.txt")
         tot_df.to_csv(tot_file, index = False, sep = " ")
         
         return (tot_file, self.sep_path)

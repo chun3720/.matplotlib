@@ -112,7 +112,7 @@ def get_plot(exp_obj, exp_name):
     
 def get_DLCplot(path, exp_obj, exp_name):
     
-    output_path = os.path.join(path, 'output\\')
+    output_path = os.path.join(path, 'output')
     
     if not os.path.exists(output_path):
         os.mkdir(output_path)
@@ -125,7 +125,7 @@ def get_DLCplot(path, exp_obj, exp_name):
     plt.xlim(0, 60)
     plt.ylabel('DLC Current (mA)')
     
-    plt.savefig(f'{output_path}{exp_name}.png', dpi = 300)
+    # plt.savefig(f'{output_path}\{exp_name}.png', dpi = 300)
     plt.plot()
     
     return dlc_df
@@ -135,10 +135,12 @@ def get_export(path, exp_obj, dlc_df, exp_name):
     mother_name = Path(path).parent.name
     
     dlc_df = dlc_df.sort_index()
-    output_path = os.path.join(path, "output\\")
+    output_path = os.path.join(path, "output")
     if not os.path.exists(output_path):
         os.mkdir(output_path)
-    with pd.ExcelWriter(f'{output_path}{mother_name}@{exp_name}_summary.xlsx') as writer:
+    
+    file2export = os.path.join(output_path, f"{mother_name}@{exp_name}_summary.xlsx")
+    with pd.ExcelWriter(file2export) as writer:
         for i, exp in enumerate(exp_obj):
             label = f'{exp.rate} mV/s'
             exp.df[["Ewe/V", "<I>/mA"]].to_excel(writer, sheet_name = 'CV', startcol = 2*i, index = False, header = [f'{i}', label])

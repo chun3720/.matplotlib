@@ -49,16 +49,17 @@ class EMI_builder(Dataloads):
 
  
 def get_export(path, exp):
-    output_path = path + 'output\\'
     
-    try:
-        os.mkdir(output_path)    
-    except FileExistsError:
-        pass        
+    output_path = os.path.join(path, "output")
+    # output_path = path + 'output\\'
+    if not os.path.exists(output_path):
+        os.mkdir(output_path)
+    
     for i in range(len(exp)):
         # writer = pd.ExcelWriter()
         # writer.close()
-        with pd.ExcelWriter(output_path + exp[i].get_name() + '_corrected.xlsx') as writer:
+        file2export = os.path.join(output_path, exp[i].get_name() + "_corrected.xlsx")
+        with pd.ExcelWriter(file2export) as writer:
             exp[i].df.to_excel(writer, sheet_name = 'corrected')
 
 

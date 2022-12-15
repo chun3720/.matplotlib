@@ -158,8 +158,8 @@ class EC_measurement(Dataloads):
                 
         
     def get_plot(self, path):
-        
-        output_path = f'{path}\\output\\'
+        output_path = os.path.join(path, "output")
+        # output_path = f'{path}\\output\\'
         
         if not os.path.exists(output_path):
             os.mkdir(output_path)
@@ -195,7 +195,7 @@ class EC_measurement(Dataloads):
 
             plt.subplots_adjust(hspace = 0.5)
             
-            plt.savefig(f'{output_path}{self.name}.png', dpi = 300)    
+            # plt.savefig(f'{output_path}{self.name}.png', dpi = 300)    
         
         elif self.method  == "CV":
             pass
@@ -261,8 +261,9 @@ def get_capacity_tot(exp_obj, cols):
 
      
 def get_export(exp, path):
-    # output_path = path + "output\\"
-    output_path = f'{path}\\output\\'
+    output_path = os.path.join(path, "output")
+    # output_path = f'{path}\\output\\'
+    
     
     if not os.path.exists(output_path):
         os.mkdir(output_path)    
@@ -293,8 +294,10 @@ def get_export(exp, path):
     d = {"Capacitance (I*dt/dV)": cap_list, "unit": cap_unit, "Current": Is_list}
     df1 = pd.DataFrame(data = d, index = GCD_list)
     
-    gcd_pkl_file = f'{output_path}\\GCD_tot.pkl'    
-    with pd.ExcelWriter(f'{output_path}\\GCD_tot.xlsx') as writer:
+    # gcd_pkl_file = f'{output_path}\\GCD_tot.pkl'    
+    gcd_pkl_file = os.path.join(output_path, "GCD_tot.pkl")
+    tot2excel = os.path.join(output_path, "GCD_tot.xlsx")
+    with pd.ExcelWriter(tot2excel) as writer:
         n= len(GCDs)
         progress_bar(0, n)
         gcd_tot_df = pd.DataFrame()
@@ -314,8 +317,10 @@ def get_export(exp, path):
         gcd_tot_df.to_pickle(gcd_pkl_file)
         df1.to_excel(writer, sheet_name = 'Summary')
         
-    pkl_file = f'{output_path}\\Capacity_tot.pkl'    
-    with pd.ExcelWriter(f'{output_path}\\Capacity_tot.xlsx') as writer:
+    # pkl_file = f'{output_path}\\Capacity_tot.pkl'    
+    pkl_file = os.path.join(output_path, "Capacity_tot.pkl")
+    captot2xl = os.path.join(output_path, "Capacity_tot.xlsx")
+    with pd.ExcelWriter(captot2xl) as writer:
         
         n= len(GCDs)
         progress_bar(0, n)
@@ -345,8 +350,8 @@ def get_export(exp, path):
             
 
     if CVs:
-        
-        with pd.ExcelWriter(f'{output_path}\\CV_tot.xlsx') as writer:
+        cv2export = os.path.join(output_path, "CV_tot.xlsx")
+        with pd.ExcelWriter(cv2export) as writer:
         
             n= len(GCDs)
             progress_bar(0, n)
@@ -363,7 +368,7 @@ def get_export(exp, path):
     
 def get_multiplot(exp, path):
     
-    output_path = f'{path}\\output\\'
+    output_path = os.path.join(path, "output")
     
     color_list = ['k', 'r', 'tab:orange', 'g', 'b', 'm', 'gray', 'brown','darkcyan', 
                   'skyblue', 'hotpink', 'dodgerblue']
@@ -422,7 +427,7 @@ def get_multiplot(exp, path):
         
         plt.xlabel("Voltage (V)")
         plt.ylabel("Current (mA)")
-        plt.savefig(f"{output_path}CV_tot.png", dpi = 300)
+        # plt.savefig(f"{output_path}CV_tot.png", dpi = 300)
         plt.show()
         
         

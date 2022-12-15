@@ -30,7 +30,7 @@ class EIS_tot(Dataloads):
         print(f'Loading and splitting {self.file} file....................')
         self.wb = load_workbook(self.file_path)
         self.sheet_count = len(self.wb.sheetnames)
-        self.raw_split = os.path.join(path, 'raw_split\\')
+        self.raw_split = os.path.join(path, 'raw_split')
         
         if not os.path.exists(self.raw_split):
             os.mkdir(self.raw_split)
@@ -39,7 +39,8 @@ class EIS_tot(Dataloads):
             name = self.wb[self.wb.sheetnames[i]]["A2"].value.split('\\')[-1].replace('.SEO', "")                                                                      
             ws = self.wb[self.wb.sheetnames[i+1]]
             
-            with open(f'{self.raw_split}{name}.csv', 'w', newline = "", encoding = "cp949") as f:
+            file2export = os.path.join(self.raw_split, f"{name}.csv")
+            with open(file2export, 'w', newline = "", encoding = "cp949") as f:
                 csv_writer = csv.writer(f)
                 for r in ws.iter_rows():
                 # for r in tqdm(ws.iter_rows()):
@@ -53,11 +54,11 @@ class EIS_raw(Dataloads):
         Dataloads.__init__(self, path, file)
         
         self.raw = pd.read_csv(self.file_path, index_col = 0, encoding = "cp949")
-        self.output_path = path + 'output\\'
-        try:
-            os.mkdir(self.output_path)    
-        except FileExistsError:
-            pass        
+        self.output_path = os.path.join(path, "output")
+        # self.output_path = path + 'output\\'
+        if not os.path.exists(self.output_path):
+            os.mkdir(self.output_path)
+        
         
 def raw_plot(path, obj_list):
     color_list = ['k', 'r', 'tab:orange', 'g', 'b', 'm', 'gray', 'brown','darkcyan', 
@@ -65,8 +66,8 @@ def raw_plot(path, obj_list):
     n = len(color_list)
     
     x, y = obj_list[0].raw.columns
-    
-    with pd.ExcelWriter(obj_list[-1].output_path + "EIS_total.xlsx") as writer:
+    file2export = os.path.join(obj_list[-1].output_path, "EIS_total.xlsx")
+    with pd.ExcelWriter(file2export) as writer:
         for i, exp in enumerate(obj_list):
             plt.plot(exp.raw[x], exp.raw[y], label = exp.name, color = color_list[i%n])
             (exp.raw[[x, y]]
@@ -96,11 +97,12 @@ def main(py_path):
             done = True
             
             raw, path, _, _ = fileloads(py_path, ".xlsx")
-            if not os.path.exists(f'{path}raw_split\\'):
+            path2check = os.path.join(path, "raw_split")
+            if not os.path.exists(path2check):
                 
                 exp_obj = build_data(path, raw, EIS_tot)
             
-            raw_path = f'{path}raw_split\\'
+            raw_path = path2check
             raw_list = [_ for _ in os.listdir(raw_path) if _.endswith(".csv")]
 
             sep_obj = build_data(raw_path, raw_list, EIS_raw)

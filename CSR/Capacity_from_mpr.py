@@ -76,8 +76,8 @@ class Raw_mpr(Dataloads):
 def get_report(exp_obj, path):
     
     tot_df = pd.DataFrame()
-    
-    output_path = f"{path}\\output\\"
+    output_path = os.path.join(path, "output")
+    # output_path = f"{path}\\output\\"
     
     if not os.path.exists(output_path):
         os.mkdir(output_path)
@@ -88,9 +88,10 @@ def get_report(exp_obj, path):
         tot_df = pd.concat([tot_df, exp_df], axis = 1)
         tot_caps += exp_caps
         
-    
-    report_file = f"{output_path}\\Capacity_tot.pkl"
-    hdf_file = f"{output_path}\\Capacity_tot.hdf5"
+    report_file = os.path.join(output_path, "Capacity_tot.pkl")
+    # report_file = f"{output_path}\\Capacity_tot.pkl"
+    hdf_file = os.path.join(output_path, "Capacity_tot.hdf5")
+    # hdf_file = f"{output_path}\\Capacity_tot.hdf5"
     tot_df.to_pickle(report_file)
     tot_df.to_hdf(hdf_file, key = "tot_df", mode = "w")
     tot_caps = np.array(tot_caps)
@@ -106,8 +107,10 @@ def get_report(exp_obj, path):
     indx = [_ +1 for _ in range(len(dc_caps_specific))]
     dc_caps_df = pd.DataFrame({"cycles": indx, "Capacity (mAh/g)" : dc_caps_specific})
     # dc_caps_df = pd.DataFrame(dc_caps_specific, index = range(len(dc_caps_specific)))
-    dc_caps_df.to_csv(f"{output_path}\\cycles.csv")
-    dc_caps_df.to_excel(f"{output_path}\\Cycle_tot.xlsx", index = "cycles" )
+    export2csv = os.path.join(output_path, "cycles.csv")
+    export2xl = os.path.join(output_path, "Cycle_tot.xlsx")
+    dc_caps_df.to_csv(export2csv)
+    dc_caps_df.to_excel(export2xl, index = "cycles" )
     
     cols = tot_df.columns
     

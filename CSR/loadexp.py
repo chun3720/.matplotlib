@@ -14,13 +14,13 @@ import pandas as pd
 from collections import defaultdict
 
 
-def path_gen(path: str, file_ext: str = None) -> str:
+def path_gen(path: str, file_ext: str = '') :
     print('\nCurrent path: ')
     print('--------------------------------------------------------------------------------------')
     print(path)
     print('--------------------------------------------------------------------------------------')
     
-    if file_ext is not None:
+    if not file_ext:
 
         path_folder = [_ for _ in os.listdir(path) if _.endswith(file_ext)]
         
@@ -40,11 +40,11 @@ def path_gen(path: str, file_ext: str = None) -> str:
     
 
 
-def get_sort(listitem: List, KeyFunction: object) -> List[str]:
+def get_sort(listitem: List, KeyFunction: object):
     sorted_list = sorted(listitem, key = KeyFunction)
     return sorted_list
 
-def raw_check(path: str, file_ext: str) -> List:
+def raw_check(path: str, file_ext: str) :
         # check_list = os.listdir(path)
         check_true = [_ for _ in os.listdir(path) if _.endswith(file_ext)]
         if len(check_true) != 0:
@@ -55,7 +55,7 @@ def raw_check(path: str, file_ext: str) -> List:
         # else:
         return check_true
 
-def fileloads(year_path: str, file_ext: str) -> List[str]:  
+def fileloads(year_path: str, file_ext: str):  
     year_dict = path_gen(year_path)
     done = False
     n = len(year_dict)
@@ -79,7 +79,7 @@ def fileloads(year_path: str, file_ext: str) -> List[str]:
     else:
         
         # date_path = year_path + '\\' + year_dict[int(folder_select)] + '\\'
-        date_path = os.path.join(year_path, year_dict[int(folder_select)]) + '\\'
+        date_path = os.path.join(year_path, year_dict[int(folder_select)])
         list_check = raw_check(date_path, file_ext) 
         if len(list_check) !=0:
             list_true = list_check
@@ -92,7 +92,7 @@ def fileloads(year_path: str, file_ext: str) -> List[str]:
         
     
 
-def progress_bar(progress: int, total: int) -> None:
+def progress_bar(progress: int, total: int) :
     percent = 100 * (progress / float(total))
     bar = '■' * int(percent) + '-' * (100 - int(percent))
     print(f"\r{bar}| {percent:.2f}%", end = "\r")
@@ -107,7 +107,7 @@ def progress_bar(progress: int, total: int) -> None:
 #         self.name, self.ext = os.path.splitext(self.file)
         
 
-def GUI_load() -> str:
+def GUI_load() :
     dir_path = sg.popup_get_folder("Select Folder")
     if not dir_path:
         sg.popup("Cancel", "No folder selected")
@@ -151,7 +151,7 @@ class Dataloads:
 
 
         
-def build_data(path: str, file: List[str], builder: object, err_skip = True) -> List[object]:
+def build_data(path: str, file: List[str], builder: object, err_skip = True):
     "Build class of each file and return list of builded classes"
     data = []
     

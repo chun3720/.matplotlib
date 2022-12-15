@@ -95,12 +95,13 @@ class N2_sorption(Dataloads):
         plt.xlabel("$P/P_{0}$")
         plt.ylabel("$V_{a}$/cm$^3$$_{(STP)}$g$^{-1}$")
         plt.legend(fontsize = 8)
-        self.output = self.path + 'export\\'
-        try:
-            os.mkdir(self.output)    
-        except FileExistsError:
-            pass        
-        plt.savefig(self.output + self.name + ".png", dpi = 600)
+        
+        self.output = os.path.join(self.path, "export")
+        # self.output = self.path + 'export\\'
+        if not os.path.exists(self.output):
+            os.mkdir(self.output)
+        
+        # plt.savefig(self.output + self.name + ".png", dpi = 600)
         plt.show()
              
         
@@ -112,22 +113,25 @@ def plot(exp):
         
 
 def get_export(exp, path):
-    output = path + 'export\\'
     
-    try:
-        os.mkdir(output)    
-    except FileExistsError:
-        pass        
+    output = os.path.join(path, "export")
+    # output = path + 'export\\
+    
+    if not os.path.exists(output):
+        os.mkdir(output)
+    
     for i in range(len(exp)):
         
         df3 = pd.DataFrame({"BET surface area" : [exp[i].SSA], "Total pore volume" : [exp[i].TPV]})        
         df = pd.concat([exp[i].output_df, df3], axis = 1, ignore_index= True)
         df.columns = ["p/p0", "Va/cm3(STP)g-1", "p/p0", "Va/cm3(STP)g-1", "BET SSA (m2/g)", "Total Pore Volume (cm3/g)"]
-        try:
-            with pd.ExcelWriter(output + exp[i].get_name() + '_corrected.xlsx') as writer:
-                df.to_excel(writer, sheet_name = 'corrected')
-        except PermissionError:
-            pass
+        
+        
+        # try:
+        #     with pd.ExcelWriter(output + exp[i].get_name() + '_corrected.xlsx') as writer:
+        #         df.to_excel(writer, sheet_name = 'corrected')
+        # except PermissionError:
+        #     pass
         
 
 def get_multiplot(exp):
@@ -153,7 +157,9 @@ def get_multiplot(exp):
     d = {"BET SSA (m2/g)" : BET_list, "Total Pore Volume (cm3/g)" : TPV_list}
     df = pd.DataFrame(data = d, index = idx_list)    
     
-    with pd.ExcelWriter(exp[-1].output + "Total.xlsx") as writer:
+    file2export = os.path.join(exp[-1].output, "Total.xlsx")
+    
+    with pd.ExcelWriter(file2export) as writer:
         for i in range(n):
             color = color_list[i%n]
             plt.plot(isotherm_list[i][0], isotherm_list[i][1], marker+line, color = color, markersize = markersize, label = exp[i].__str__())

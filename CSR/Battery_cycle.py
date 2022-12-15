@@ -46,15 +46,19 @@ def export_with_plot(cols, exp_obj, writer, idx, basis = 1000, header = False):
 
     
 def get_export(exp, path, check = 'n', convertor = 'n'):
-    output_path = f'{path}output\\'
+    output_path = os.path.join(path, 'output')
+    # output_path = f'{path}output\\'
     cols = exp[0].data.columns
+    
+    file2export = os.path.join(output_path, "Cycle_tot.xlsx")
+    file2recalc = os.path.join(output_path, 'Cycle_recalculation.xlsx')
 
     if not os.path.exists(output_path):
         os.mkdir(output_path) 
 
     if check == 'y':
         
-        with pd.ExcelWriter(f'{output_path}Cycle_tot.xlsx') as writer:
+        with pd.ExcelWriter(file2export) as writer:
             for i, cy in enumerate(exp):
                 
                 export_with_plot(cols, cy, writer, i, header = ["mAh/g", cy.name])          
@@ -65,11 +69,12 @@ def get_export(exp, path, check = 'n', convertor = 'n'):
        
         if convertor != 'n':
             
-            with pd.ExcelWriter(f'{output_path}Cycle_recalculation.xlsx') as writer:
+            
+            with pd.ExcelWriter(file2recalc) as writer:
 
                 for i, cy in enumerate(exp):
                     
-                    quest = input(f"type conversion factor(C) for '{cy.file}', ex) new_value = prev_value * C: ")
+                    quest = input(f"type conversion factor(C) for '<{cy.file}>', ex) new_value = prev_value * C: ")
                     basis = float(quest)
                     
                     export_with_plot(cols, cy, writer, i, basis*1000, header = ["mAh/g(re)", cy.name])          
@@ -78,7 +83,7 @@ def get_export(exp, path, check = 'n', convertor = 'n'):
                 plot_setup(leg, "recalculation", "Cycle number", "Specific Capacity ($mAh/g_{re}$)" )
                 
     else:
-        with pd.ExcelWriter(f'{output_path}Cycle_tot.xlsx') as writer:
+        with pd.ExcelWriter(file2export) as writer:
     
             for i, cy in enumerate(exp):
                 (
@@ -89,10 +94,10 @@ def get_export(exp, path, check = 'n', convertor = 'n'):
                 
         if convertor != 'n':
 
-            with pd.ExcelWriter(f'{output_path}Cycle_recalculation.xlsx') as writer:
+            with pd.ExcelWriter(file2recalc) as writer:
 
                 for i, cy in enumerate(exp):
-                    quest = input(f"type conversion factor for '{cy.file}' (make sure it means denominator): ")
+                    quest = input(f"type conversion factor for '<{cy.file}>' (make sure it means denominator): ")
                     basis = float(quest)                    
                     export_with_plot(cols, cy, writer, i, basis, header = ["Ah/g(re)", cy.name])          
 

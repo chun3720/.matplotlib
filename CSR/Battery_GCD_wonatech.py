@@ -77,7 +77,7 @@ class LIB_tot(Dataloads):
             self.idx_list_values = self.data[self.data[self.Y] < cut_off].index
         
         self.idxx = [0] + list(self.idx_list_values)
-        output_path = os.path.join(self.path, 'split\\')
+        output_path = os.path.join(self.path, 'split')
         
         if not os.path.exists(output_path):
             os.mkdir(output_path)
@@ -87,8 +87,10 @@ class LIB_tot(Dataloads):
         
         for i in tqdm(range(n)):
             df = self.data.iloc[self.idxx[i]:self.idxx[i+1]]
-            # df.to_csv(f'{output_path}cycle{i+1}.csv', encoding = "cp949")
-            df.to_parquet(f'{output_path}cycle{i+1}.pqt')
+            # df.to_csv(f'{output_path}cycle{i+1}.csv', encoding = "cp949")]
+            export2pqt = os.path.join(output_path, f"cycle{i+1}.pqt")
+            df.to_parquet(export2pqt)
+            # df.to_parquet(f'{output_path}cycle{i+1}.pqt')
             k = df.shape[0]
             cap, vol = df.iloc[k-1]
             capacity_list.append(cap)
@@ -222,7 +224,7 @@ def get_capacity_df(exp_obj):
     
 
 def get_export(path, exp_obj):
-    output_path = os.path.join(path, 'output\\')
+    output_path = os.path.join(path, 'output')
     # output_path = self.path + 'output\\'
     if not os.path.exists(output_path):
         os.mkdir(output_path)
@@ -241,7 +243,8 @@ def get_export(path, exp_obj):
         #         )       
         # GCDs.append(exp_obj[num])
     
-    pkl_file = f'{output_path}total.pkl'
+    # pkl_file = f'{output_path}total.pkl'
+    pkl_file = os.path.join(output_path, "total.pkl")
     # with pd.ExcelWriter(f'{output_path}total.xlsx') as writer:
     # num = len(exp_obj)
     # progress_bar(0, num)

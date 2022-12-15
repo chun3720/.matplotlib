@@ -84,7 +84,8 @@ def get_report(exp_obj, path):
     
     tot_df = pd.DataFrame()
     
-    output_path = f"{path}\\output\\"
+    output_path = os.path.join(path, "output")
+    # output_path = f"{path}\\output\\"
     
     if not os.path.exists(output_path):
         os.mkdir(output_path)
@@ -96,8 +97,10 @@ def get_report(exp_obj, path):
         tot_caps += exp_caps
         
     
-    report_file = f"{output_path}\\Capacity_tot.pkl"
-    hdf_file = f"{output_path}\\Capacity_tot.hdf5"
+    # report_file = f"{output_path}\\Capacity_tot.pkl"
+    report_file = os.path.join(output_path, "Capacity_tot.pkl")
+    # hdf_file = f"{output_path}\\Capacity_tot.hdf5"
+    hdf_file = os.path.join(output_path, "Capacity_tot.hdf5")
     tot_df.to_pickle(report_file)
     tot_df.to_hdf(hdf_file, key = "tot_df", mode = "w")
     tot_caps = np.array(tot_caps)
@@ -122,7 +125,8 @@ def get_report(exp_obj, path):
     
     loading_df = pd.DataFrame(loading_memo)
     
-    excel_file = f"{output_path}\\Cycle_tot.xlsx"
+    # excel_file = f"{output_path}\\Cycle_tot.xlsx"
+    excel_file = os.path.join(output_path, "Cycle_tot.xlsx")
     # dc_caps_df.to_excel(f"{output_path}\\Cycle_tot.xlsx", index = "cycles" )
     with pd.ExcelWriter(excel_file) as writer:
         dc_caps_df.to_excel(writer, index = "cycles", sheet_name = "Sheet1")

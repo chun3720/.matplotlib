@@ -178,7 +178,8 @@ class EC_measurement(Dataloads):
         
     def get_plot(self, path):
         
-        output_path = f'{path}\\output\\'
+        # output_path = f'{path}\\output\\'
+        output_path = os.path.join(path, "output")
         
         if not os.path.exists(output_path):
             os.mkdir(output_path)
@@ -267,7 +268,8 @@ def get_capacity_tot(exp_obj, cols):
      
 def get_export(exp, path):
     # output_path = path + "output\\"
-    output_path = f'{path}\\output\\'
+    # output_path = f'{path}\\output\\'
+    output_path = os.path.join(path, "output")
     
     if not os.path.exists(output_path):
         os.mkdir(output_path)    
@@ -282,8 +284,10 @@ def get_export(exp, path):
     
     GCD_list, cap_list, cap_unit, Is_list = [] , [], [], []   
      
-    gcd_pkl_file = f'{output_path}\\GCD_tot.pkl' 
-    cap_pkl_file = f'{output_path}\\Capacity_tot.pkl'    
+    # gcd_pkl_file = f'{output_path}\\GCD_tot.pkl' 
+    gcd_pkl_file = os.path.join(output_path, "GCD_tot.pkl")
+    # cap_pkl_file = f'{output_path}\\Capacity_tot.pkl'    
+    cap_pkl_file = os.path.join(output_path, "Capacity_tot.pkl")
 
     n= len(GCDs)
     
@@ -331,15 +335,16 @@ def get_export(exp, path):
     dc_caps_specific = discharge_caps * 1000 / loading
     
     dc_caps_df = pd.DataFrame(dc_caps_specific)
-    dc_caps_df.to_csv(f"{output_path}\\cycles.csv")
+    file2csv = os.path.join(output_path, "cycles.csv")
+    dc_caps_df.to_csv(file2csv)
     # print(dc_caps_df)
     
     d = {"Capacitance (I*dt/dV)": cap_list, "unit": cap_unit, "Current": Is_list}
     df1 = pd.DataFrame(data = d, index = GCD_list)    
 
     if CVs:
-        
-        with pd.ExcelWriter(f'{output_path}\\CV_tot.xlsx') as writer:
+        cv2export = os.path.join(output_path, "CV_tot.xlsx")
+        with pd.ExcelWriter(cv2export) as writer:
         
             n= len(GCDs)
             progress_bar(0, n)
