@@ -12,6 +12,101 @@ from loadexp import get_data_folder
 import sys
 
 
+doc = {
+    "Battery_cycle.py" : {
+        "input": ".xlsx", 
+        "help": "Capacity vs cycle, Wonatech"
+        },
+    
+    "Battery_GCD_wonatech.py" : {
+        "input":"xlsx", 
+        "help": "legacy"},
+    
+    "BETplot_for_csv.py" :  {
+        "input": ".csv", 
+        "help": "legacy"},
+    
+    "BET_from_simple.py" : {
+        "input": ".csv", 
+        "help": "N2 physisorption (adsorption only data)" },
+    
+    "Capacity_from_mpr.py": {
+        "input": ".mpr", 
+        "help": "jyc_only"},
+    
+    "EC_DLCplot_from_CV_old.py": {
+        "input": "txt", 
+        "help": "legacy"},
+    
+    "EC_DLC_from_CV_mpt.py": {
+        "input": ".mpt", 
+        "help":"EDLC from CV, Biologic"},
+    
+    "EC_DLC_fit_report.py": {
+        "input": "xlsx", 
+        "help": "legacy"},
+    
+    "EIS_wonatech.py": {
+        "input": ".xlsx", 
+        "help": "get total EIS graph, Wonatech"},
+    
+    "Export_path.py": {
+        "input": "None", 
+        "help":"make path_ref.xlsx"},
+    
+    "mpt_separation.py": {
+        "input" : ".mpt", 
+        "help": "Capacity from total cycle, Biologic"},
+    
+    "Other_EMI.py": {
+        "input": ".s2p", 
+        "help" : "Electromagnetic shielding"},
+    
+    "Pkl2Excel.py": {
+        "input" : ".pkl", 
+        "help" : "simple conversion"},
+    
+    "Pqt2Excel.py": {
+        "input": ".pqt", 
+        "help" : "simple conversion"},
+    
+    "Set_path.py": {
+        "input": "None", 
+        "help" : "appyly for path_ref.xlsx"},
+    
+    "Strength_csv.py": {
+        "input": ".csv", 
+        "help" : "Stress vs strain"},
+    
+    "Supercap_GCD_mpt.py": {
+        "input": ".mpt", 
+        "help" : "Voltage vs Capacity for battery, Biologic"},
+    
+    "Supercap_GCD_mpt_legacy.py": {
+        "input": ".mpt", 
+        "help" : "CV and GCD for Supercap, Biologic"},
+    
+    "Supercap_GCD_Wonatech.py": {
+        "input": ".xlsx", 
+        "help" : "Supercap for Wonatech"},
+    
+    "Supercap_mpr.py": {
+        "input": ".mpr", 
+        "help" : "jyc_only"},
+    
+    "Unifiying wrd.py": {
+        "input": ".wrd", 
+        "help" : "merging wrd file location"},
+    
+    "Wonatech_CSV_reordering.py": {
+        "input": ".csv", 
+        "help": "one-click multi-file battery analysis, Wonatech"},
+    
+    "wonatech_for_csv.py": {
+        "input": ".csv", 
+        "help": "plot for selected cycle, Wonatech"}
+        }
+
 
 def runCSR(direct = False):
 
@@ -37,7 +132,15 @@ def runCSR(direct = False):
     
     for key, value in code_dict.items():
         key = str(key)
-        print(f'[{key.rjust(2)}] : {value}')
+        value = str(value)
+        analysis = doc[value]
+        d = analysis["input"]
+        h = analysis["help"]
+        print(f'[{key.rjust(2)}] :', end = " ")
+        print(value.ljust(30, '_'), end = '')
+        print(d.rjust(10, '_'), end = "")
+        print(h.rjust(50, "_"), end = "-----")
+        print(f'[{key.rjust(2)}]' )
     
     selector = input("\nwhich file want to run: ")
     chosen = int(selector)
