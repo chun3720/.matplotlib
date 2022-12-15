@@ -5,28 +5,13 @@ Created on Tue Jul 26 10:07:06 2022
 @author: user
 """
 import os
-
-
-
-import sys
-from pathlib import Path
-curr_path = os.getcwd()
-parent_path = Path(curr_path).parent
-sys.path.append(str(parent_path))
-
-# from CSR import loadexp
-
-from CSR.loadexp import *
-
+from loadexp import Dataloads, build_data, fileloads
 import pandas as pd
-
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 
 year_path = r"D:\Researcher\JYCheon\DATA\Strength"
-
-
 
 
 class Strength(Dataloads):
@@ -93,7 +78,7 @@ def get_graph(exp_obj, path):
     angle = 30
     
     for col in df1.columns:
-        
+        # sns.barplot(x = df.index, y = col, data = df1)
         ax = sns.barplot(x = df.index, y = col, data = df1)
         ax.set_xticklabels(names, fontsize = 8, rotation = angle)
         file2fig = os.path.join(output_path, f"{col[:8]}.png")
