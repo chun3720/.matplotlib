@@ -102,7 +102,7 @@ doc = {
     
     "Wonatech_CSV_reordering.py": {
         "input": ".csv", 
-        "help": "one-click battery analysis, Wonatech"},
+        "help": "one-click multi-file battery analysis, Wonatech"},
     
     "wonatech_for_csv.py": {
         "input": ".csv", 
