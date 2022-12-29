@@ -107,8 +107,8 @@ def progress_bar(progress: int, total: int) :
 #         self.name, self.ext = os.path.splitext(self.file)
         
 
-def GUI_load() :
-    dir_path = sg.popup_get_folder("Select Folder")
+def GUI_load(history = False) :
+    dir_path = sg.popup_get_folder("Select Folder", history = history)
     if not dir_path:
         sg.popup("Cancel", "No folder selected")
         raise SystemExit("Cancelling: no folder selected")
